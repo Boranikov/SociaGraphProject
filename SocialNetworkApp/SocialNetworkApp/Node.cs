@@ -24,6 +24,7 @@ namespace SocialNetworkApp
 
         // Komşuları tutacak liste
         public List<Node> Neighbors { get; set; }
+        private static Random rnd = new Random();
 
         // Yapıcı Metot (Constructor)
         public Node(int id, string name, Point location)
@@ -34,7 +35,6 @@ namespace SocialNetworkApp
             Neighbors = new List<Node>();
 
             // Varsayılan rastgele değerler atama test sırasında kolaylık
-            Random rnd = new Random();
             Activeness = Math.Round(rnd.NextDouble(), 2); 
             Interaction = rnd.Next(1, 20); 
         }

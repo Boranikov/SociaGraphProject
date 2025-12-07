@@ -19,7 +19,7 @@ namespace SocialNetworkApp
             Weight = CalculateWeight();
         }
 
-        // PDF formülüne göre ağırlık hesaplayan metot
+        // formüle göre ağırlık hesaplayan metot
         private double CalculateWeight()
         {
             // 1. Aktiflik farkının karesi
