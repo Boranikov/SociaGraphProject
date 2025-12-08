@@ -19,7 +19,6 @@ namespace SocialNetworkApp
         private int nextId = 5;
         private bool isDragging = false;
         private Point dragOffset;
-        private List<Node> shortestPath = null;
 
         public Form1()
         {
@@ -55,19 +54,6 @@ namespace SocialNetworkApp
         {
             base.OnPaint(e);
             Graphics g = e.Graphics;
-            g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-
-            // --- SARI YOL ÇİZİMİ ---
-            if (shortestPath != null && shortestPath.Count > 1)
-            {
-                using (Pen pathPen = new Pen(Color.Gold, 5))
-                {
-                    for (int i = 0; i < shortestPath.Count - 1; i++)
-                    {
-                        g.DrawLine(pathPen, shortestPath[i].Location, shortestPath[i + 1].Location); //En kısa yolu sarı çiz
-                    }
-                }
-            }
 
             // Kenarları çiz
             foreach (var edge in graph.Edges)
@@ -139,34 +125,22 @@ namespace SocialNetworkApp
         protected override void OnMouseDown(MouseEventArgs e)
         {
             base.OnMouseDown(e);
-
             if (e.Button == MouseButtons.Left)
             {
                 Node clickedNode = GetNodeAt(e.Location);
-
-                // SHIFT TUŞU KONTROLÜ
-                if (Control.ModifierKeys == Keys.Shift && selectedNode != null && clickedNode != null)
+                if (clickedNode != null)
                 {
-                    shortestPath = GraphAlgorithms.BFS_ShortestPath(graph, selectedNode, clickedNode);
-                    if (shortestPath == null) MessageBox.Show("Bağlantı bulunamadı!");
+                    isDragging = true;
+                    selectedNode = clickedNode;
+                    dragOffset = new Point(e.Location.X - clickedNode.Location.X, e.Location.Y - clickedNode.Location.Y);
                 }
-                else
-                {
-                    shortestPath = null; // Eski yolu temizle
-                    if (clickedNode != null)
-                    {
-                        isDragging = true;
-                        selectedNode = clickedNode;
-                        dragOffset = new Point(e.Location.X - clickedNode.Location.X, e.Location.Y - clickedNode.Location.Y); //Sürükleme 
-                    }
-                    else
-                    {
-                        isDragging = false;
-                        selectedNode = null;
-                    }
+                else 
+                { 
+                    isDragging = false;
+                    selectedNode = null;
                 }
-                this.Invalidate();
             }
+            this.Invalidate();
         }
         protected override void OnMouseMove(MouseEventArgs e)
         {
@@ -174,7 +148,7 @@ namespace SocialNetworkApp
             if (isDragging && selectedNode != null)
             {
                 Point newLocation = new Point(e.X - dragOffset.X, e.Y - dragOffset.Y);
-                selectedNode.Location = newLocation; // Düğümün yeni konumunu ayarla
+                selectedNode.Location = newLocation;
                 this.Invalidate(); // Ekranı yeniden çiz
             }
         }
