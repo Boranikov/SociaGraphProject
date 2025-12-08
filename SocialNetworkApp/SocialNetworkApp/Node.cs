@@ -16,11 +16,11 @@ namespace SocialNetworkApp
         // Ağırlık hesabı için gereken özellikler
         public double Activeness { get; set; }    // Özellik 1: Aktiflik
         public double Interaction { get; set; }   // Özellik 2: Etkileşim
-        public int ConnectionCount { get; set; }  // Özellik 3: Bağlantı Sayısı 
+        public int ConnectionCount { get; set; }  // Özellik 3: Bağlantı Sayısı (Bunu otomatik de hesaplatabiliriz)
 
-        // Görsel özellikler 
+        // Görsel özellikler (Ekranda nerede duracak?)
         public Point Location { get; set; }
-        public Color Color { get; set; } = Color.Blue; // renk mavi
+        public Color Color { get; set; } = Color.Blue; // Varsayılan renk mavi
 
         // Komşuları tutacak liste
         public List<Node> Neighbors { get; set; }
