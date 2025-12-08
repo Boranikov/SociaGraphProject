@@ -14,12 +14,13 @@ namespace SocialNetworkApp
     public partial class Form1 : Form
     {
         private Graph graph;
-        private Node selectedNode; 
+        private Node selectedNode;
         private const int NodeRadius = 20;
         private int nextId = 5;
         private bool isDragging = false;
         private Point dragOffset;
         private List<Node> shortestPath = null;
+        private List<Node> dfsPath = null;
 
         public Form1()
         {
@@ -27,10 +28,10 @@ namespace SocialNetworkApp
             this.DoubleBuffered = true;
             this.Size = new Size(800, 600);
             this.Text = "Sosyal Ağ Grafiği";
-            createTestGraph(); 
+            createTestGraph();
         }
 
-        private void createTestGraph() 
+        private void createTestGraph()
         {
             graph = new Graph();
             // Test düğümleri oluşturma
@@ -90,6 +91,19 @@ namespace SocialNetworkApp
                 g.FillEllipse(brush, node.Location.X - NodeRadius, node.Location.Y - NodeRadius, NodeRadius * 2, NodeRadius * 2);
                 g.DrawString(node.Name, this.Font, Brushes.White, node.Location.X - NodeRadius / 2, node.Location.Y - NodeRadius / 2);
             }
+
+            // DFS için mor yol çiz
+
+            if (dfsPath != null && dfsPath.Count > 1)
+            {
+                using (Pen pathPen = new Pen(Color.Purple, 5)) // Kalın Mor Kalem
+                {
+                    for (int i = 0; i < dfsPath.Count - 1; i++)
+                    {
+                        g.DrawLine(pathPen, dfsPath[i].Location, dfsPath[i + 1].Location);
+                    }
+                }
+            }
         }
 
         protected override void OnMouseClick(MouseEventArgs e)
@@ -144,15 +158,32 @@ namespace SocialNetworkApp
             {
                 Node clickedNode = GetNodeAt(e.Location);
 
-                // SHIFT TUŞU KONTROLÜ
+                // 1. Durum: SHIFT Basılı (BFS - Sarı Yol)
                 if (Control.ModifierKeys == Keys.Shift && selectedNode != null && clickedNode != null)
                 {
                     shortestPath = GraphAlgorithms.BFS_ShortestPath(graph, selectedNode, clickedNode);
-                    if (shortestPath == null) MessageBox.Show("Bağlantı bulunamadı!");
+                    dfsPath = null;    // Diğer yolu temizle
+
+                    if (shortestPath == null) MessageBox.Show("BFS ile bağlantı bulunamadı!");
                 }
+                // 2. Durum: CTRL Basılı (DFS - Mor Yol)
+               
+                else if (Control.ModifierKeys == Keys.Control && selectedNode != null && clickedNode != null)
+                {
+                    
+                    dfsPath = GraphAlgorithms.DFS_FindPath(selectedNode, clickedNode);
+
+                    shortestPath = null; // Diğer yolları temizle
+
+                    if (dfsPath == null) MessageBox.Show("DFS ile bağlantı bulunamadı!");
+                } 
+
+                // 3. Durum: Hiçbir Tuş Yok 
                 else
                 {
-                    shortestPath = null; // Eski yolu temizle
+                    shortestPath = null; // Tıklayınca eski çizimleri temizle
+                    dfsPath = null;
+
                     if (clickedNode != null)
                     {
                         isDragging = true;
@@ -165,7 +196,7 @@ namespace SocialNetworkApp
                         selectedNode = null;
                     }
                 }
-                this.Invalidate();
+                this.Invalidate(); // Ekranı yenile
             }
         }
         protected override void OnMouseMove(MouseEventArgs e)
