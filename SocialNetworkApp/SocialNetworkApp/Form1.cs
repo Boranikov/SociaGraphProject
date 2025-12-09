@@ -22,6 +22,7 @@ namespace SocialNetworkApp
         private List<Node> shortestPath = null;
         private List<Node> dfsPath = null;
         private List<Node> djkPath = null;
+        private Coloring coloring = new Coloring();
 
         public Form1()
         {
@@ -53,69 +54,13 @@ namespace SocialNetworkApp
             graph.AddEdge(nodeB, nodeD);
         }
 
-        protected override void OnPaint(PaintEventArgs e)
-        {
-            base.OnPaint(e);
-            Graphics g = e.Graphics;
-            g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-
-            // --- SARI YOL ÇİZİMİ ---
-            if (shortestPath != null && shortestPath.Count > 1)
+            protected override void OnPaint(PaintEventArgs e)
             {
-                using (Pen pathPen = new Pen(Color.Gold, 5))
-                {
-                    for (int i = 0; i < shortestPath.Count - 1; i++)
-                    {
-                        g.DrawLine(pathPen, shortestPath[i].Location, shortestPath[i + 1].Location);
-                    }
-                }
+                base.OnPaint(e);
+
+                // Coloring sınıfındaki Draw metodunu çağırıyoruz
+                coloring.Draw(e.Graphics, graph, selectedNode, shortestPath, dfsPath, djkPath);
             }
-
-            // Kenarları çiz
-            foreach (var edge in graph.Edges)
-            {
-                Pen pen = new Pen(Color.Gray, 2);
-                g.DrawLine(pen, edge.Source.Location, edge.Target.Location);
-
-                // Ağırlık etiketini çiz
-                Point midPoint = new Point(
-                    (edge.Source.Location.X + edge.Target.Location.X) / 2,
-                    (edge.Source.Location.Y + edge.Target.Location.Y) / 2);
-
-                g.DrawString(edge.Weight.ToString(), this.Font, Brushes.Black, midPoint);
-            }
-
-            // Düğümleri çiz
-            foreach (var node in graph.Nodes)
-            {
-                Brush brush = (node == selectedNode) ? Brushes.Red : Brushes.Blue;
-                g.FillEllipse(brush, node.Location.X - NodeRadius, node.Location.Y - NodeRadius, NodeRadius * 2, NodeRadius * 2);
-                g.DrawString(node.Name, this.Font, Brushes.White, node.Location.X - NodeRadius / 2, node.Location.Y - NodeRadius / 2);
-            }
-
-            // DFS için mor yol çiz
-
-            if (dfsPath != null && dfsPath.Count > 1)
-            {
-                using (Pen pathPen = new Pen(Color.Purple, 5)) // Kalın Mor Kalem
-                {
-                    for (int i = 0; i < dfsPath.Count - 1; i++)
-                    {
-                        g.DrawLine(pathPen, dfsPath[i].Location, dfsPath[i + 1].Location);
-                    }
-                }
-            }
-            if (djkPath != null && djkPath.Count > 1)
-            {
-                using (Pen pathPen = new Pen(Color.LimeGreen, 5)) // Kalın Yeşil Kalem
-                {
-                    for (int i = 0; i < djkPath.Count - 1; i++)
-                    {
-                        g.DrawLine(pathPen, djkPath[i].Location, djkPath[i + 1].Location);
-                    }
-                }
-            }
-        }
 
         protected override void OnMouseClick(MouseEventArgs e)
         {

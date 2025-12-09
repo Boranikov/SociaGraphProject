@@ -95,7 +95,7 @@ namespace SocialNetworkApp
         // ----------------------------- Dijkstra --------------------------------------//
         public static List<Node> Dijkstra_ShortestPath(Graph graph, Node start, Node end)
         {
-            var distance = new Dictionary<Node, double>();
+            var distance = new Dictionary<Node, double>(); 
             var previous = new Dictionary<Node, Node>();
             var nodesToVisit = new List<Node>();
             // Başlangıç her nokta sonsuz mesafe, başlangıç 0
@@ -149,5 +149,6 @@ namespace SocialNetworkApp
             return path;
         }
         // ----------------------------- Dijkstra BİTTİ --------------------------------------//
+        // ----------------------------- A* --------------------------------------//
     }
 }
