@@ -8,6 +8,7 @@ namespace SocialNetworkApp
 {
     internal class GraphAlgorithms
     {
+        // ----------------------------- BFS --------------------------------------//
         public static List<Node> BFS_ShortestPath(Graph graph, Node start, Node end)
         {
             if (start == null || end == null) return null;
@@ -46,6 +47,8 @@ namespace SocialNetworkApp
             path.Reverse(); //Yolu ters çevir
             return path; //Yolu döndür
         }
+        // ----------------------------- BFS BİTTİ --------------------------------------//
+        // ----------------------------- DFS --------------------------------------//
         public static List<Node> DFS_FindPath(Node start, Node end) 
         {
             if (start == null || end == null) return null;
@@ -88,5 +91,63 @@ namespace SocialNetworkApp
 
             return path;
         }
+        // ----------------------------- DFS BİTTİ --------------------------------------//
+        // ----------------------------- Dijkstra --------------------------------------//
+        public static List<Node> Dijkstra_ShortestPath(Graph graph, Node start, Node end)
+        {
+            var distance = new Dictionary<Node, double>();
+            var previous = new Dictionary<Node, Node>();
+            var nodesToVisit = new List<Node>();
+            // Başlangıç her nokta sonsuz mesafe, başlangıç 0
+            foreach (var node in graph.Nodes)
+            {
+                distance[node] = double.MaxValue;
+                nodesToVisit.Add(node);
+            }
+            distance[start] = 0;
+            while (nodesToVisit.Count > 0)
+            {
+                // Mesafesi en küçük olan düğümü seç
+                nodesToVisit.Sort((x,y) =>  distance[x].CompareTo(distance[y]));
+                var current = nodesToVisit[0];
+                nodesToVisit.RemoveAt(0);
+                // Hedef ulaşıldıysa veya kalanlar sonsuz uzaklıksa dur
+                if (current == end) break;
+                if (distance[current] == double.MaxValue) break;
+                // Komşuları ve kenar ağırlıklarını bul
+                foreach ( var edge in graph.Edges)
+                {
+                    Node neighbor = null;
+                    if (edge.Source == current) neighbor = edge.Target;
+                    else if (edge.Target == current) neighbor = edge.Source;
+                    if (neighbor != null && nodesToVisit.Contains(neighbor))
+                    {
+                        double newDist = distance[current] + edge.Weight; // Mevcut yol + Kenar Ağırlığı
+
+                        // Daha kısa bir yol bulduysak güncelle
+                        if (newDist < distance[neighbor])
+                        {
+                            distance[neighbor] = newDist;
+                            previous[neighbor] = current;
+                        }
+                    }
+                }
+            }
+            // Yolu geriye doğru oluştur
+            if (!previous.ContainsKey(end) && start != end) return null;
+
+            var path = new List<Node>();
+            var curr = end;
+            while (curr != null && previous.ContainsKey(curr))
+            {
+                path.Add(curr);
+                curr = previous[curr];
+            }
+            path.Add(start);
+            path.Reverse();
+
+            return path;
+        }
+        // ----------------------------- Dijkstra BİTTİ --------------------------------------//
     }
 }

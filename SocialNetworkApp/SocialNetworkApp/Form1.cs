@@ -21,6 +21,7 @@ namespace SocialNetworkApp
         private Point dragOffset;
         private List<Node> shortestPath = null;
         private List<Node> dfsPath = null;
+        private List<Node> djkPath = null;
 
         public Form1()
         {
@@ -104,6 +105,16 @@ namespace SocialNetworkApp
                     }
                 }
             }
+            if (djkPath != null && djkPath.Count > 1)
+            {
+                using (Pen pathPen = new Pen(Color.LimeGreen, 5)) // Kalın Yeşil Kalem
+                {
+                    for (int i = 0; i < djkPath.Count - 1; i++)
+                    {
+                        g.DrawLine(pathPen, djkPath[i].Location, djkPath[i + 1].Location);
+                    }
+                }
+            }
         }
 
         protected override void OnMouseClick(MouseEventArgs e)
@@ -162,21 +173,35 @@ namespace SocialNetworkApp
                 if (Control.ModifierKeys == Keys.Shift && selectedNode != null && clickedNode != null)
                 {
                     shortestPath = GraphAlgorithms.BFS_ShortestPath(graph, selectedNode, clickedNode);
-                    dfsPath = null;    // Diğer yolu temizle
+                    dfsPath = null;
+                    djkPath = null;
 
                     if (shortestPath == null) MessageBox.Show("BFS ile bağlantı bulunamadı!");
                 }
-                // 2. Durum: CTRL Basılı (DFS - Mor Yol)
+                // 2. Durum: ALT Basılı (DFS - Mor Yol)
                
-                else if (Control.ModifierKeys == Keys.Control && selectedNode != null && clickedNode != null)
+                else if (Control.ModifierKeys == Keys.Alt && selectedNode != null && clickedNode != null)
                 {
                     
                     dfsPath = GraphAlgorithms.DFS_FindPath(selectedNode, clickedNode);
 
                     shortestPath = null; // Diğer yolları temizle
+                    djkPath=null;
 
                     if (dfsPath == null) MessageBox.Show("DFS ile bağlantı bulunamadı!");
-                } 
+                }
+
+                // 3. Durum : CTRL Basılı (Djikstra - Yeşil Yol)
+
+                else if (Control.ModifierKeys == Keys.Control && selectedNode != null && clickedNode != null)
+                {
+                    djkPath = GraphAlgorithms.Dijkstra_ShortestPath(graph, selectedNode, clickedNode);
+
+                    shortestPath = null;
+                    dfsPath = null;   // Diğer yolları temizle
+
+                    if (djkPath == null) MessageBox.Show("DJK ile bağlantı bulunamadı!");
+                }
 
                 // 3. Durum: Hiçbir Tuş Yok 
                 else
