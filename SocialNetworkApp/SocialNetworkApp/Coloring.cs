@@ -14,7 +14,7 @@ namespace SocialNetworkApp
 
         // Ana çizim metodu
         public void Draw(Graphics g, Graph graph, Node selectedNode,
-                         List<Node> shortestPath, List<Node> dfsPath, List<Node> djkPath)
+                         List<Node> shortestPath, List<Node> dfsPath, List<Node> djkPath, List<Node>AStarPath)
         {
             g.SmoothingMode = SmoothingMode.AntiAlias;
 
@@ -47,6 +47,9 @@ namespace SocialNetworkApp
 
             // Dijkstra Yolu (Yeşil)
             DrawPath(g, djkPath, Color.LimeGreen);
+
+            // A* Yolu (Kırmızı)
+            DrawPath(g, AStarPath, Color.Red);
 
             // --- 3. KATMAN: DÜĞÜMLER (En üstte) ---
             foreach (var node in graph.Nodes)

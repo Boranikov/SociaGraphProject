@@ -22,6 +22,7 @@ namespace SocialNetworkApp
         private List<Node> shortestPath = null;
         private List<Node> dfsPath = null;
         private List<Node> djkPath = null;
+        private List<Node> AStarPath = null;
         private Coloring coloring = new Coloring();
 
         public Form1()
@@ -59,7 +60,7 @@ namespace SocialNetworkApp
                 base.OnPaint(e);
 
                 // Coloring sınıfındaki Draw metodunu çağırıyoruz
-                coloring.Draw(e.Graphics, graph, selectedNode, shortestPath, dfsPath, djkPath);
+                coloring.Draw(e.Graphics, graph, selectedNode, shortestPath, dfsPath, djkPath, AStarPath);
             }
 
         protected override void OnMouseClick(MouseEventArgs e)
@@ -120,6 +121,7 @@ namespace SocialNetworkApp
                     shortestPath = GraphAlgorithms.BFS_ShortestPath(graph, selectedNode, clickedNode);
                     dfsPath = null;
                     djkPath = null;
+                    AStarPath = null;
 
                     if (shortestPath == null) MessageBox.Show("BFS ile bağlantı bulunamadı!");
                 }
@@ -132,6 +134,7 @@ namespace SocialNetworkApp
 
                     shortestPath = null; // Diğer yolları temizle
                     djkPath=null;
+                    AStarPath = null;
 
                     if (dfsPath == null) MessageBox.Show("DFS ile bağlantı bulunamadı!");
                 }
@@ -144,15 +147,30 @@ namespace SocialNetworkApp
 
                     shortestPath = null;
                     dfsPath = null;   // Diğer yolları temizle
+                    AStarPath = null;
 
                     if (djkPath == null) MessageBox.Show("DJK ile bağlantı bulunamadı!");
                 }
 
-                // 3. Durum: Hiçbir Tuş Yok 
+                // 4. Durum : CTRL + SHİFT Basılı (A* - Kırmızı Yol)
+
+                else if ((Control.ModifierKeys & (Keys.Control | Keys.Shift)) == (Keys.Control | Keys.Shift) && selectedNode != null && clickedNode != null)
+                {
+                    AStarPath = GraphAlgorithms.AStar_Path(graph, selectedNode, clickedNode);
+                    shortestPath = null;
+                    dfsPath = null;
+                    djkPath = null;
+
+                    if (AStarPath == null) MessageBox.Show("AStar ile bağlantı bulunamadı");
+                }
+
+                // 5. Durum: Hiçbir Tuş Yok 
                 else
                 {
                     shortestPath = null; // Tıklayınca eski çizimleri temizle
                     dfsPath = null;
+                    djkPath = null;
+                    AStarPath=null;
 
                     if (clickedNode != null)
                     {
