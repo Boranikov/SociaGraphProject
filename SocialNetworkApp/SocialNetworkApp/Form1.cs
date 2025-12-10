@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Drawing.Text;
 using System.Linq;
 using System.Text;
@@ -15,6 +16,7 @@ namespace SocialNetworkApp
     {
         private Graph graph;
         private Node selectedNode;
+        private Edge selectedEdge;
         private const int NodeRadius = 20;
         private int nextId = 5;
         private bool isDragging = false;
@@ -28,6 +30,7 @@ namespace SocialNetworkApp
         public Form1()
         {
             InitializeComponent();
+            this.KeyPreview = true;
             this.DoubleBuffered = true;
             this.Size = new Size(800, 600);
             this.Text = "Sosyal Ağ Grafiği";
@@ -59,9 +62,9 @@ namespace SocialNetworkApp
             {
                 base.OnPaint(e);
 
-                // Coloring sınıfındaki Draw metodunu çağırıyoruz
-                coloring.Draw(e.Graphics, graph, selectedNode, shortestPath, dfsPath, djkPath, AStarPath);
-            }
+            // Coloring sınıfındaki Draw metodunu çağırıyoruz
+            coloring.Draw(e.Graphics, graph, selectedNode, selectedEdge, shortestPath, dfsPath, djkPath, AStarPath);
+        }
 
         protected override void OnMouseClick(MouseEventArgs e)
         {
@@ -85,6 +88,25 @@ namespace SocialNetworkApp
                 if (distance <= NodeRadius)
                 {
                     return node;
+                }
+            }
+            return null;
+        }
+        private Edge GetEdgeAt(Point p)
+        {
+
+            foreach (var edge in graph.Edges)
+            {
+                // Sanal bir çizim yolu oluştur
+                using (GraphicsPath path = new GraphicsPath())
+                {
+                    // Bu yola bizim kenarı ekle
+                    path.AddLine(edge.Source.Location, edge.Target.Location);
+
+                    if (path.IsOutlineVisible(p, new Pen(Color.Black, 10)))
+                    {
+                        return edge;
+                    }
                 }
             }
             return null;
@@ -126,34 +148,28 @@ namespace SocialNetworkApp
                     if (shortestPath == null) MessageBox.Show("BFS ile bağlantı bulunamadı!");
                 }
                 // 2. Durum: ALT Basılı (DFS - Mor Yol)
-               
                 else if (Control.ModifierKeys == Keys.Alt && selectedNode != null && clickedNode != null)
                 {
-                    
                     dfsPath = GraphAlgorithms.DFS_FindPath(selectedNode, clickedNode);
 
-                    shortestPath = null; // Diğer yolları temizle
-                    djkPath=null;
+                    shortestPath = null;
+                    djkPath = null;
                     AStarPath = null;
 
                     if (dfsPath == null) MessageBox.Show("DFS ile bağlantı bulunamadı!");
                 }
-
                 // 3. Durum : CTRL Basılı (Djikstra - Yeşil Yol)
-
                 else if (Control.ModifierKeys == Keys.Control && selectedNode != null && clickedNode != null)
                 {
                     djkPath = GraphAlgorithms.Dijkstra_ShortestPath(graph, selectedNode, clickedNode);
 
                     shortestPath = null;
-                    dfsPath = null;   // Diğer yolları temizle
+                    dfsPath = null;
                     AStarPath = null;
 
                     if (djkPath == null) MessageBox.Show("DJK ile bağlantı bulunamadı!");
                 }
-
                 // 4. Durum : CTRL + SHİFT Basılı (A* - Kırmızı Yol)
-
                 else if ((Control.ModifierKeys & (Keys.Control | Keys.Shift)) == (Keys.Control | Keys.Shift) && selectedNode != null && clickedNode != null)
                 {
                     AStarPath = GraphAlgorithms.AStar_Path(graph, selectedNode, clickedNode);
@@ -163,28 +179,39 @@ namespace SocialNetworkApp
 
                     if (AStarPath == null) MessageBox.Show("AStar ile bağlantı bulunamadı");
                 }
-
-                // 5. Durum: Hiçbir Tuş Yok 
+                // 5. Durum: Hiçbir Tuş Yok (Sürükleme veya Seçim)
                 else
                 {
-                    shortestPath = null; // Tıklayınca eski çizimleri temizle
+                    shortestPath = null;
                     dfsPath = null;
                     djkPath = null;
-                    AStarPath=null;
+                    AStarPath = null;
 
                     if (clickedNode != null)
                     {
                         isDragging = true;
                         selectedNode = clickedNode;
+                        selectedEdge = null;
                         dragOffset = new Point(e.Location.X - clickedNode.Location.X, e.Location.Y - clickedNode.Location.Y);
                     }
                     else
                     {
+                        Edge clickedEdge = GetEdgeAt(e.Location); //Edge seçme
+
+                        if (clickedEdge != null)
+                        {
+                            selectedEdge = clickedEdge;
+                            selectedNode = null;
+                        }
+                        else
+                        {
+                            selectedEdge = null;
+                            selectedNode = null;
+                        }
                         isDragging = false;
-                        selectedNode = null;
                     }
                 }
-                this.Invalidate(); // Ekranı yenile
+                this.Invalidate();
             }
         }
         protected override void OnMouseMove(MouseEventArgs e)
@@ -204,6 +231,22 @@ namespace SocialNetworkApp
             if (isDragging)
             {
                 isDragging = false; // Sürüklemeyi bitir
+            }
+        }
+        protected override void OnKeyDown(KeyEventArgs e) // Silme İşlemi
+        {
+            base.OnKeyDown(e);
+            if(e.KeyCode == Keys.Delete && selectedNode != null) // Delete tuşu ile silme
+            {
+                graph.RemoveNode(selectedNode); // Node Silme
+                e.Handled = true; // Başka tuşlarla karışmasın
+                this.Invalidate(); // Ekranı yeniden çiz
+            }
+            else if(e.KeyCode == Keys.Delete && selectedEdge != null)
+            {
+                graph.RemoveEdge(selectedEdge);
+                e.Handled = true; // Başka tuşlarla karışmasın
+                this.Invalidate(); // Ekranı yeniden çiz
             }
         }
     }

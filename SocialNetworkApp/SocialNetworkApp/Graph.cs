@@ -1,4 +1,4 @@
-ï»¿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace SocialNetworkApp
@@ -14,7 +14,7 @@ namespace SocialNetworkApp
             Edges = new List<Edge>();
         }
 
-        // --- EKLEME Ä°ÅžLEMLERÄ° ---
+        // --- EKLEME ÝÞLEMLERÝ ---
 
         public void AddNode(Node node)
         {
@@ -40,25 +40,25 @@ namespace SocialNetworkApp
             }
         }
 
-        // --- SÄ°LME Ä°ÅžLEMLERÄ°  ---
+        // --- SÝLME ÝÞLEMLERÝ  ---
 
         public void RemoveNode(Node nodeToRemove)
         {
             if (nodeToRemove == null) return;
 
-            // 1. Ã–nce bu dÃ¼ÄŸÃ¼me baÄŸlÄ± olan tÃ¼m kenarlar silinmeli
-            // Listeyi tersten dÃ¶nÃ¼yoruz ki silerken index kaymamalÄ±
+            // 1. Önce bu düðüme baðlý olan tüm kenarlar silinmeli
+            // Listeyi tersten dönüyoruz ki silerken index kaymamalý
             for (int i = Edges.Count - 1; i >= 0; i--)
             {
                 var edge = Edges[i];
                 if (edge.Source == nodeToRemove || edge.Target == nodeToRemove)
                 {
-                    // KenarÄ± sil
+                    // Kenarý sil
                     RemoveEdge(edge);
                 }
             }
 
-            // 2. DÃ¼ÄŸÃ¼mÃ¼ listeden sil
+            // 2. Düðümü listeden sil
             Nodes.Remove(nodeToRemove);
         }
 
@@ -66,11 +66,11 @@ namespace SocialNetworkApp
         {
             if (edgeToRemove == null) return;
 
-            // KomÅŸuluk listelerinden birbirlerini silsinler
+            // Komþuluk listelerinden birbirlerini silsinler
             edgeToRemove.Source.Neighbors.Remove(edgeToRemove.Target);
             edgeToRemove.Target.Neighbors.Remove(edgeToRemove.Source);
 
-            // BaÄŸlantÄ± sayÄ±larÄ±nÄ± dÃ¼ÅŸÃ¼r
+            // Baðlantý sayýlarýný düþür
             edgeToRemove.Source.ConnectionCount--;
             edgeToRemove.Target.ConnectionCount--;
 

@@ -1,4 +1,4 @@
-ï»¿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -9,7 +9,7 @@ namespace SocialNetworkApp
     internal static class Program
     {
         /// <summary>
-        /// UygulamanÄ±n ana girdi noktasÄ±.
+        /// Uygulamanýn ana girdi noktasý.
         /// </summary>
         [STAThread]
         static void Main()

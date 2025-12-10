@@ -13,7 +13,7 @@ namespace SocialNetworkApp
         private const int NodeRadius = 35; // Düğüm yarıçapı
 
         // Ana çizim metodu
-        public void Draw(Graphics g, Graph graph, Node selectedNode,
+        public void Draw(Graphics g, Graph graph, Node selectedNode, Edge selectedEdge,
                          List<Node> shortestPath, List<Node> dfsPath, List<Node> djkPath, List<Node>AStarPath)
         {
             g.SmoothingMode = SmoothingMode.AntiAlias;
@@ -21,26 +21,42 @@ namespace SocialNetworkApp
             // --- 1. KATMAN: KENARLAR VE AĞIRLIKLAR (En altta) ---
             foreach (var edge in graph.Edges)
             {
-                using (Pen pen = new Pen(Color.Gray, 2))
+                // Rengi ve Kalınlığı Belirle
+                Color edgeColor;
+                float edgeWidth;
+
+                if (edge == selectedEdge)
+                {
+                    edgeColor = Color.DeepPink; // Seçiliyse Koyu Pembe
+                    edgeWidth = 8;              // Ve daha kalın
+                }
+                else
+                {
+                    edgeColor = Color.Pink;     // Değilse normal pembe
+                    edgeWidth = 5;
+                }
+
+                // Belirlenen renk ve kalınlık ile kalemi oluştur
+                using (Pen pen = new Pen(edgeColor, edgeWidth))
                 {
                     g.DrawLine(pen, edge.Source.Location, edge.Target.Location);
                 }
 
-                // Ağırlık yazısı
+                // Ağırlık yazısı (Değişmedi)
                 Point midPoint = new Point(
                     (edge.Source.Location.X + edge.Target.Location.X) / 2,
                     (edge.Source.Location.Y + edge.Target.Location.Y) / 2);
 
-                using (Font font = new Font("Arial", 15))
+                using (Font font = new Font("Arial", 12))
                 {
                     g.DrawString(edge.Weight.ToString(), font, Brushes.Black, midPoint);
                 }
             }
 
-            // --- 2. KATMAN: RENKLİ YOLLAR (Ortada) ---
+                // --- 2. KATMAN: RENKLİ YOLLAR (Ortada) ---
 
-            // Sarı Yol (Shortest Path)
-            DrawPath(g, shortestPath, Color.Gold);
+                // Sarı Yol (Shortest Path)
+                DrawPath(g, shortestPath, Color.Gold);
 
             // DFS Yolu (Mor)
             DrawPath(g, dfsPath, Color.Purple);

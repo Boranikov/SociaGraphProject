@@ -1,37 +1,38 @@
-ï»¿using System;
+using System;
+using System.Drawing;
 
 namespace SocialNetworkApp
 {
-    // Ä°ki kullanÄ±cÄ± arasÄ±ndaki baÄŸlantÄ± (Edge)
+    // İki kullanıcı arasındaki bağlantı (Edge)
     public class Edge
     {
-        public Node Source { get; set; } // Kaynak DÃ¼ÄŸÃ¼m (Kimden?)
-        public Node Target { get; set; } // Hedef DÃ¼ÄŸÃ¼m (Kime?)
-        public double Weight { get; set; } // AÄŸÄ±rlÄ±k (Maliyet)
+        public Node Source { get; set; } // Kaynak Düğüm (Kimden?)
+        public Node Target { get; set; } // Hedef Düğüm (Kime?)
+        public double Weight { get; set; } // Ağırlık (Maliyet)
 
-        // YapÄ±cÄ± Metot
+        // Yapıcı Metot
         public Edge(Node source, Node target)
         {
             Source = source;
             Target = target;
 
-            // AÄŸÄ±rlÄ±ÄŸÄ± otomatik hesapla
+            // Ağırlığı otomatik hesapla
             Weight = CalculateWeight();
         }
 
-        // formÃ¼le gÃ¶re aÄŸÄ±rlÄ±k hesaplayan metot
+        // formüle göre ağırlık hesaplayan metot
         private double CalculateWeight()
         {
-            // 1. Aktiflik farkÄ±nÄ±n karesi
+            // 1. Aktiflik farkının karesi
             double activenessDiff = Math.Pow(Source.Activeness - Target.Activeness, 2);
 
-            // 2. EtkileÅŸim farkÄ±nÄ±n karesi
+            // 2. Etkileşim farkının karesi
             double interactionDiff = Math.Pow(Source.Interaction - Target.Interaction, 2);
 
-            // 3. BaÄŸlantÄ± sayÄ±sÄ± farkÄ±nÄ±n karesi
+            // 3. Bağlantı sayısı farkının karesi
             double connectionDiff = Math.Pow(Source.ConnectionCount - Target.ConnectionCount, 2);
 
-            // FormÃ¼lÃ¼n uygulanmasÄ±
+            // Formülün uygulanması
             double result = 1 + Math.Sqrt(activenessDiff + interactionDiff + connectionDiff);
 
             // Sonucu yuvarla

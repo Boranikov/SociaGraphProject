@@ -1,32 +1,31 @@
-ï»¿using System;
+using System;
 using System.Collections.Generic;
 using System.Drawing; 
 
 namespace SocialNetworkApp
 {
-    // (DÃ¼ÄŸÃ¼m/KullanÄ±cÄ±) SÄ±nÄ±fÄ±
+    // (Düğüm/Kullanıcı) Sınıfı
     public class Node
     {
         // Benzersiz kimlik
         public int Id { get; set; }
 
-        // KullanÄ±cÄ± AdÄ± 
+        // Kullanıcı Adı 
         public string Name { get; set; }
 
-        // AÄŸÄ±rlÄ±k hesabÄ± iÃ§in gereken Ã¶zellikler
-        public double Activeness { get; set; }    // Ã–zellik 1: Aktiflik
-        public double Interaction { get; set; }   // Ã–zellik 2: EtkileÅŸim
-        public int ConnectionCount { get; set; }  // Ã–zellik 3: BaÄŸlantÄ± SayÄ±sÄ± (Bunu otomatik de hesaplatabiliriz)
+        // Ağırlık hesabı için gereken özellikler
+        public double Activeness { get; set; }    // Özellik 1: Aktiflik
+        public double Interaction { get; set; }   // Özellik 2: Etkileşim
+        public int ConnectionCount { get; set; }  // Özellik 3: Bağlantı Sayısı (Bunu otomatik de hesaplatabiliriz)
 
-        // GÃ¶rsel Ã¶zellikler (Ekranda nerede duracak?)
+        // Görsel özellikler (Ekranda nerede duracak?)
         public Point Location { get; set; }
-        public Color Color { get; set; } = Color.Blue; // VarsayÄ±lan renk mavi
 
-        // KomÅŸularÄ± tutacak liste
+        // Komşuları tutacak liste
         public List<Node> Neighbors { get; set; }
         private static Random rnd = new Random();
 
-        // YapÄ±cÄ± Metot (Constructor)
+        // Yapıcı Metot (Constructor)
         public Node(int id, string name, Point location)
         {
             Id = id;
@@ -34,7 +33,7 @@ namespace SocialNetworkApp
             Location = location;
             Neighbors = new List<Node>();
 
-            // VarsayÄ±lan rastgele deÄŸerler atama test sÄ±rasÄ±nda kolaylÄ±k
+            // Varsayılan rastgele değerler atama test sırasında kolaylık
             Activeness = Math.Round(rnd.NextDouble(), 2); 
             Interaction = rnd.Next(1, 20); 
         }
