@@ -4,14 +4,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms.VisualStyles;
+using System.Windows.Forms;
 
 namespace SocialNetworkApp
 {
     internal class GraphAlgorithms
     {
+
         // ----------------------------- BFS --------------------------------------//
         public static List<Node> BFS_ShortestPath(Graph graph, Node start, Node end)
         {
+            
             if (start == null || end == null) return null;
             var previous = new Dictionary<Node, Node>(); //Hangi düðüme nerden geldik
             var queue = new Queue<Node>(); //BFS için kuyruk

@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Diagnostics;
 
 namespace SocialNetworkApp
 {
@@ -34,7 +35,7 @@ namespace SocialNetworkApp
             this.DoubleBuffered = true;
             this.Size = new Size(1920, 1000);
             this.Text = "Sosyal Ağ Grafiği";
-            createTestGraph(20, 0.2);
+            createTestGraph(100, 0.);
         }
 
         // ------------------------TEST ETME -----------------------------------// 
@@ -77,7 +78,7 @@ namespace SocialNetworkApp
                     }
                     if(!overlap) PositionFound = true;
                     attempts++;
-                } while(!PositionFound && attempts < 50);
+                } while(!PositionFound && attempts < 100);
 
                 if (!PositionFound) continue; // Yer bulamazsan bu düğümü atla
 
@@ -180,6 +181,8 @@ namespace SocialNetworkApp
         protected override void OnMouseDown(MouseEventArgs e)
         {
             base.OnMouseDown(e);
+            
+            Stopwatch stw = new Stopwatch();
 
             if (e.Button == MouseButtons.Left)
             {
@@ -188,43 +191,51 @@ namespace SocialNetworkApp
                 // 1. Durum: SHIFT Basılı (BFS - Sarı Yol)
                 if (Control.ModifierKeys == Keys.Shift && selectedNode != null && clickedNode != null)
                 {
+                    stw.Start();
                     shortestPath = GraphAlgorithms.BFS_ShortestPath(graph, selectedNode, clickedNode);
                     dfsPath = null;
                     djkPath = null;
                     AStarPath = null;
+                    stw.Stop();
+                    MessageBox.Show($"BFS Süre: {stw.Elapsed.TotalMilliseconds}");
 
                     if (shortestPath == null) MessageBox.Show("BFS ile bağlantı bulunamadı!");
                 }
                 // 2. Durum: ALT Basılı (DFS - Mor Yol)
                 else if (Control.ModifierKeys == Keys.Alt && selectedNode != null && clickedNode != null)
                 {
+                    stw.Restart();
                     dfsPath = GraphAlgorithms.DFS_FindPath(selectedNode, clickedNode);
-
                     shortestPath = null;
                     djkPath = null;
                     AStarPath = null;
-
+                    stw.Stop();
+                    MessageBox.Show($"DFS Süre: {stw.Elapsed.TotalMilliseconds}");
                     if (dfsPath == null) MessageBox.Show("DFS ile bağlantı bulunamadı!");
                 }
                 // 3. Durum : CTRL Basılı (Djikstra - Yeşil Yol)
                 else if (Control.ModifierKeys == Keys.Control && selectedNode != null && clickedNode != null)
                 {
+                    stw.Restart();
                     djkPath = GraphAlgorithms.Dijkstra_ShortestPath(graph, selectedNode, clickedNode);
 
                     shortestPath = null;
                     dfsPath = null;
                     AStarPath = null;
-
+                    stw.Stop();
+                    MessageBox.Show($"Djikstra Süre: {stw.Elapsed.TotalMilliseconds}");
                     if (djkPath == null) MessageBox.Show("DJK ile bağlantı bulunamadı!");
                 }
                 // 4. Durum : CTRL + SHİFT Basılı (A* - Kırmızı Yol)
                 else if ((Control.ModifierKeys & (Keys.Control | Keys.Shift)) == (Keys.Control | Keys.Shift) && selectedNode != null && clickedNode != null)
                 {
+                    stw.Restart();
                     AStarPath = GraphAlgorithms.AStar_Path(graph, selectedNode, clickedNode);
                     shortestPath = null;
                     dfsPath = null;
                     djkPath = null;
-
+                    stw.Stop();
+                    MessageBox.Show($"A* Süre: {stw.Elapsed.TotalMilliseconds}");
                     if (AStarPath == null) MessageBox.Show("AStar ile bağlantı bulunamadı");
                 }
                 // 5. Durum: Hiçbir Tuş Yok (Sürükleme veya Seçim)
