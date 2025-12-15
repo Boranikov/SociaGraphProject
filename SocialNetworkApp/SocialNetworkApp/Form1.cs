@@ -35,7 +35,7 @@ namespace SocialNetworkApp
             this.DoubleBuffered = true;
             this.Size = new Size(1920, 1000);
             this.Text = "Sosyal Ağ Grafiği";
-            createTestGraph(100, 0.);
+            createTestGraph(100, 0.5);
         }
 
         // ------------------------TEST ETME -----------------------------------// 
