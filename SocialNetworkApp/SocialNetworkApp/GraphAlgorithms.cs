@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -7,7 +8,7 @@ using System.Windows.Forms.VisualStyles;
 
 namespace SocialNetworkApp
 {
-    internal class GraphAlgorithms
+    public class GraphAlgorithms
     {
         // ----------------------------- BFS --------------------------------------//
         public static List<Node> BFS_ShortestPath(Graph graph, Node start, Node end)
@@ -245,5 +246,68 @@ namespace SocialNetworkApp
             return path;
         }
         // ----------------------------- A* BÝTTÝ --------------------------------------//
+        // Bu fonksiyon, baðlantý sayýsýna göre grafiði sýralar ve ilk 'count' kadarýný getirir
+        public static List<Node> GetTopInfluencers(Graph graph, int count)
+        {
+            if (graph == null || graph.Nodes == null) return new List<Node>();
+
+            // 1. Düðümleri ConnectionCount (Baðlantý Sayýsý) özelliðine göre AZALAN sýrada diz
+            // 2. Eðer eþitlik varsa Interaction (Etkileþim) puanýna bak
+            // 3. Ýlk 'count' (örneðin 5) tanesini al
+            return graph.Nodes
+                .OrderByDescending(n => n.ConnectionCount)
+                .ThenByDescending(n => n.Interaction)
+                .Take(count)
+                .ToList();
+        }
+
+        // WELSH-POWELL RENKLENDÝRME ALGORÝTMASI
+        public static void WelshPowellColor(Graph graph)
+        {
+            // 1. Düðümleri derecesine (Baðlantý Sayýsý) göre BÜYÜKTEN KÜÇÜÐE sýrala
+            // (En çok baðlantýsý olan en kritiktir, önce o boyanýr)
+            var sortedNodeList = graph.Nodes.OrderByDescending(n => n.ConnectionCount).ToList();
+
+            // Renk Paleti (Sýrayla bu renkleri deneyeceðiz)
+            Color[] palette = new Color[]
+            {
+        Color.Red, Color.Blue, Color.Green, Color.Orange,
+        Color.Purple, Color.Cyan, Color.Magenta, Color.Brown, Color.Pink
+            };
+
+            int colorIndex = 0;
+
+            // Tüm düðümler boyanana kadar devam et
+            // (Rengi White olanlar henüz boyanmamýþ demektir)
+            while (sortedNodeList.Any(n => n.NodeColor == Color.White))
+            {
+                // Paletten sýradaki rengi seç
+                if (colorIndex >= palette.Length) colorIndex = 0; // Renk biterse baþa dön (veya rastgele üret)
+                Color currentColor = palette[colorIndex];
+
+                // Henüz boyanmamýþ ilk düðümü (en yüksek dereceli) al ve boya
+                var firstUncolored = sortedNodeList.First(n => n.NodeColor == Color.White);
+                firstUncolored.NodeColor = currentColor;
+
+                // Þimdi listeyi gez ve bu renge boyayabileceðimiz diðer düðümleri bul
+                // Kural: Seçtiðimiz düðümün komþusu OLMAMALI
+                foreach (var node in sortedNodeList)
+                {
+                    if (node.NodeColor != Color.White) continue; // Zaten boyalýysa geç
+
+                    // Bu düðümün, þu anki "currentColor" rengine sahip bir komþusu var mý?
+                    bool hasSameColorNeighbor = node.Neighbors.Any(neighbor => neighbor.NodeColor == currentColor);
+
+                    if (!hasSameColorNeighbor)
+                    {
+                        // Komþularda bu renk yok, o zaman bunu da ayný renge boyayabiliriz!
+                        node.NodeColor = currentColor;
+                    }
+                }
+
+                // Bir sonraki renge geç
+                colorIndex++;
+            }
+        }
     }
 }

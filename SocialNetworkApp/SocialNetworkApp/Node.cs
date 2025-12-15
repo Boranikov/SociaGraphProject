@@ -7,6 +7,7 @@ namespace SocialNetworkApp
     // (Düðüm/Kullanýcý) Sýnýfý
     public class Node
     {
+        public Color NodeColor { get; set; } = Color.White; // Varsayýlan renk beyaz olsun
         // Benzersiz kimlik
         public int Id { get; set; }
 
@@ -37,5 +38,6 @@ namespace SocialNetworkApp
             Activeness = Math.Round(rnd.NextDouble(), 2); 
             Interaction = rnd.Next(1, 20); 
         }
+
     }
 }
