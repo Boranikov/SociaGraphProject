@@ -8,6 +8,14 @@
         Title="MainWindow" Height="450" Width="800">
     <Grid>
         <Canvas x:Name="GraphCanvas" Background="White"/>
+        <Grid>
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="10">
+
+                <Button x:Name="btnSave" Content="JSON Kaydet" Width="100" Height="30" Margin="5" Click="btnSave_Click"/>
+                <Button x:Name="btnLoad" Content="JSON Yükle" Width="100" Height="30" Margin="5" Click="btnLoad_Click"/>
+
+            </StackPanel>
+        </Grid>
 
     </Grid>
 </Window>
