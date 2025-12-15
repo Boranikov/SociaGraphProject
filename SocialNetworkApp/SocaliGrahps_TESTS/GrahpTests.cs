@@ -40,15 +40,46 @@ namespace SocaliGrahps_TESTS
             graph.AddNode(NodeA);
             graph.AddNode(NodeB);
             graph.AddEdge(NodeA, NodeB);
+            var createdEdge = graph.Edges[0];
 
             // Doğrulama
-            var createdEdge = graph.Edges[0];
+            
             Assert.AreEqual(1,graph.Edges.Count); //Edge listeye eklendi mi
             Assert.AreEqual(NodeB, createdEdge.Target,"A'nın komşularında B yok"); // Komşulama doğru mu
             Assert.AreEqual(NodeA, createdEdge.Source,"B'nin komşularında A yok"); // Komşulama doğru mu
             Assert.AreEqual(1, NodeA.ConnectionCount); // Node bağlantı sayısı arttı mı
             Assert.AreEqual(1, NodeB.ConnectionCount); // Node bağlantı sayısı arttı mı
 
+        }
+        [TestMethod]
+        public void RemoveNodeTest()
+        {
+            // Eylem
+            graph.AddNode(NodeA);
+            graph.AddNode(NodeB);
+            graph.AddEdge(NodeA, NodeB);
+            graph.RemoveNode(NodeA);
+            // Doğrulama
+            Assert.AreEqual(1, graph.Nodes.Count, "Yanlış Sayıda Node Silindi"); // NodeB hala listede mi
+            Assert.IsFalse(graph.Nodes.Contains(NodeA), "NodeA Hala listede"); // NodeA silindi mi
+            Assert.AreEqual(0, graph.Edges.Count, "NodeA Silindi Ama Edge Hala duruyor");
+        }
+        [TestMethod]
+        public void RemoveEdgeTest()
+        {
+            // Eylem
+            graph.AddNode(NodeA);
+            graph.AddNode(NodeB);
+            graph.AddEdge(NodeA, NodeB);
+            var CreatedEdge = graph.Edges[0];
+            graph.RemoveEdge(CreatedEdge);
+
+            // Doğrulama
+            Assert.AreEqual(2, graph.Nodes.Count, "Nodelar Silindi"); // Nodelar hala duruyor mu
+            Assert.AreEqual(0, graph.Edges.Count, "Edge Silinmedi");  // Edge silindi mi
+            Assert.AreEqual(0, NodeA.ConnectionCount, "NodeA'nın bağlantı sayısı düşmedi"); // NodeA'da bağlantı var mı
+            Assert.AreEqual(0, NodeB.ConnectionCount, "NodeB'nin bağlantı sayısı düşmedi"); // NodeB'de bağlantı var mı
+            Assert.IsFalse(NodeA.Neighbors.Contains(NodeB), "NodeA ve NodeB hala komşu"); //NodeA ve NodeB hala komşu mu
         }
     }
 }

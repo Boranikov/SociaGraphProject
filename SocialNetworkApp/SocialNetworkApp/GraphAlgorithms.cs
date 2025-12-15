@@ -8,7 +8,7 @@ using System.Windows.Forms;
 
 namespace SocialNetworkApp
 {
-    internal class GraphAlgorithms
+    public class GraphAlgorithms
     {
 
         // ----------------------------- BFS --------------------------------------//
