@@ -54,6 +54,7 @@
     <Compile Include="NodeTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="EdgeTests.cs" />
+    <Compile Include="GrahpTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
