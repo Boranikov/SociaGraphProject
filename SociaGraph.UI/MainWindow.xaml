@@ -7,28 +7,90 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="2*"/>
+            <ColumnDefinition Width="8*"/>
+        </Grid.ColumnDefinitions>
+
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <Border Grid.Row="0" BorderBrush="Black" BorderThickness="2" Margin="10">
-            <Canvas x:Name="mainCanvas" 
-            Background="White" 
-            ClipToBounds="True"
-            MouseLeftButtonDown="mainCanvas_MouseLeftButtonDown"
-            MouseRightButtonDown="mainCanvas_MouseRightButtonDown"
-            MouseMove="mainCanvas_MouseMove"
-            MouseLeftButtonUp="mainCanvas_MouseLeftButtonUp"/>
+        <Border Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" BorderBrush="#DDDDDD" BorderThickness="0,0,2,0" Background="#F5F5F5">
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <StackPanel Margin="10">
+
+                    <TextBlock Text="🛠️ KONTROL PANELİ" FontWeight="Bold" FontSize="16" Foreground="#333" Margin="0,10,0,15" HorizontalAlignment="Center"/>
+
+                    <Border Background="White" CornerRadius="5" Padding="10" Margin="0,0,0,15" BorderBrush="#CCC" BorderThickness="1">
+                        <StackPanel>
+                            <TextBlock Text="SEÇİLİ DÜĞÜM" FontWeight="Bold" Foreground="#007ACC" Margin="0,0,0,5"/>
+
+                            <DockPanel Margin="0,2">
+                                <TextBlock Text="ID:" FontWeight="SemiBold" Width="60"/>
+                                <TextBlock x:Name="lblNodeId" Text="-"/>
+                            </DockPanel>
+
+                            <DockPanel Margin="0,2">
+                                <TextBlock Text="İsim:" FontWeight="SemiBold" Width="60"/>
+                                <TextBlock x:Name="lblNodeName" Text="-"/>
+                            </DockPanel>
+
+                            <DockPanel Margin="0,2">
+                                <TextBlock Text="Puan:" FontWeight="SemiBold" Width="60"/>
+                                <TextBlock x:Name="lblNodeScore" Text="-"/>
+                            </DockPanel>
+
+                            <DockPanel Margin="0,2">
+                                <TextBlock Text="Bağlantı:" FontWeight="SemiBold" Width="60"/>
+                                <TextBlock x:Name="lblNodeDegree" Text="-"/>
+                            </DockPanel>
+
+                            <TextBlock Text="Komşular:" FontWeight="SemiBold" Margin="0,5,0,2"/>
+                            <ListBox x:Name="lstNeighbors" Height="80" BorderBrush="#EEE" Background="#FAFAFA"/>
+                        </StackPanel>
+                    </Border>
+
+                    <Border Background="White" CornerRadius="5" Padding="10" BorderBrush="#CCC" BorderThickness="1">
+                        <StackPanel>
+                            <TextBlock Text="📊 ANALİZ SONUÇLARI" FontWeight="Bold" Foreground="#007ACC" Margin="0,0,0,5"/>
+
+                            <DockPanel Margin="0,2">
+                                <TextBlock Text="Süre:" FontWeight="Bold" Width="40"/>
+                                <TextBlock x:Name="lblPerformance" Text="0 ms" Foreground="Red" FontWeight="Bold"/>
+                            </DockPanel>
+
+                            <TextBlock Text="Sıralama / Sonuç:" FontWeight="SemiBold" Margin="0,5,0,2"/>
+                            <ListBox x:Name="lstAlgorithmResults" Height="200" BorderBrush="#EEE" Background="#FAFAFA"/>
+                        </StackPanel>
+                    </Border>
+
+                </StackPanel>
+            </ScrollViewer>
         </Border>
 
-        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" Margin="10">
-            <CheckBox x:Name="chkMoveMode" Content="Taşıma Modu (Sürükle)" VerticalAlignment="Center" Margin="10,0,0,0" FontWeight="Bold"/>
-            <Button x:Name="btnSave" Content="JSON Kaydet" Width="100" Height="30" Margin="5" Click="btnSave_Click"/>
-            <Button x:Name="btnLoad" Content="JSON Yükle" Width="100" Height="30" Margin="5" Click="btnLoad_Click"/>
-            <Button x:Name="btnAnalyze" Content="Analiz (Top 5)" Width="100" Height="30" Margin="5" Click="btnAnalyze_Click"/>
-            <Button x:Name="btnColoring" Content="Renklendir" Width="100" Height="30" Margin="5" Click="btnColoring_Click"/>
+        <Border Grid.Column="1" Grid.Row="0" BorderBrush="#333" BorderThickness="1" Margin="10">
+            <Canvas x:Name="mainCanvas" 
+                Background="White" 
+                ClipToBounds="True"
+                MouseLeftButtonDown="mainCanvas_MouseLeftButtonDown"
+                MouseRightButtonDown="mainCanvas_MouseRightButtonDown"
+                MouseMove="mainCanvas_MouseMove"
+                MouseLeftButtonUp="mainCanvas_MouseLeftButtonUp"/>
+        </Border>
 
+        <StackPanel Grid.Column="1" Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,10">
+
+            <Border Background="#EEE" CornerRadius="5" Padding="5" Margin="5">
+                <CheckBox x:Name="chkMoveMode" Content="✋ Taşıma Modu" VerticalAlignment="Center" FontWeight="SemiBold"/>
+            </Border>
+
+            <Button x:Name="btnSave" Content="💾 Kaydet" Width="80" Height="30" Margin="5" Click="btnSave_Click"/>
+            <Button x:Name="btnLoad" Content="📂 Yükle" Width="80" Height="30" Margin="5" Click="btnLoad_Click"/>
+            <Button x:Name="btnAnalyze" Content="🏆 Analiz (Top 5)" Width="100" Height="30" Margin="5" Click="btnAnalyze_Click"/>
+            <Button x:Name="btnColoring" Content="🎨 Renklendir" Width="90" Height="30" Margin="5" Click="btnColoring_Click"/>
+           
         </StackPanel>
     </Grid>
 </Window>

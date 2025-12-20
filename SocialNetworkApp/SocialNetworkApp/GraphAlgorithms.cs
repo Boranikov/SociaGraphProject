@@ -251,12 +251,13 @@ namespace SocialNetworkApp
         {
             if (graph == null || graph.Nodes == null) return new List<Node>();
 
-            // 1. Düðümleri ConnectionCount (Baðlantý Sayýsý) özelliðine göre AZALAN sýrada diz
-            // 2. Eðer eþitlik varsa Interaction (Etkileþim) puanýna bak
-            // 3. Ýlk 'count' (örneðin 5) tanesini al
+            // DÜZELTME BURADA:
+            // Eskiden: n.ConnectionCount (Güncellenmemiþ olabilir)
+            // Þimdi:   n.Neighbors.Count (Kesin bilgi, çünkü listeyi az önce doldurduk)
+
             return graph.Nodes
-                .OrderByDescending(n => n.ConnectionCount)
-                .ThenByDescending(n => n.Interaction)
+                .OrderByDescending(n => n.Neighbors.Count) // Önce Baðlantý Sayýsýna bak
+                .ThenByDescending(n => n.Interaction)      // Eþitse Puana bak
                 .Take(count)
                 .ToList();
         }

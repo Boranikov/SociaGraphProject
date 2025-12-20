@@ -45,24 +45,43 @@ namespace SociaGraph.UI
         }
 
         // --- 3. ANALİZ BUTONU (TOP 5) ---
+        // --- ANALİZ BUTONU (Top 5) - DÜZELTİLMİŞ HALİ ---
         private void btnAnalyze_Click(object sender, RoutedEventArgs e)
         {
-            if (myGraph == null || myGraph.Nodes.Count == 0)
+            if (myGraph == null || myGraph.Nodes.Count == 0) return;
+
+            // 1. SAYAÇ BAŞLAT (Performans Ölçümü İçin)
+            System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
+            sw.Start();
+
+            // 2. BAĞLANTILARI GÜNCELLE (Hata olmasın diye)
+            foreach (var node in myGraph.Nodes) node.Neighbors.Clear();
+            foreach (var edge in myGraph.Edges)
             {
-                MessageBox.Show("Analiz edilecek veri yok!", "Hata", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
+                if (!edge.Source.Neighbors.Contains(edge.Target)) edge.Source.Neighbors.Add(edge.Target);
+                if (!edge.Target.Neighbors.Contains(edge.Source)) edge.Target.Neighbors.Add(edge.Source);
             }
 
+            // 3. ALGORİTMAYI ÇALIŞTIR
             var top5List = GraphAlgorithms.GetTopInfluencers(myGraph, 5);
 
-            string mesaj = "🏆 EN POPÜLER 5 KULLANICI 🏆\n\n";
+            // 4. SAYAÇ DURDUR
+            sw.Stop();
+
+            // 5. SONUÇLARI SOL PANELE YAZDIR
+            lblPerformance.Text = $"{sw.ElapsedMilliseconds} ms"; // Süreyi yaz
+
+            lstAlgorithmResults.Items.Clear(); // Listeyi temizle
+            lstAlgorithmResults.Items.Add("--- 🏆 EN ETKİLİ 5 KULLANICI ---");
+
             int sira = 1;
             foreach (var node in top5List)
             {
-                mesaj += $"{sira}. {node.Name}\n   └ Bağlantı: {node.ConnectionCount}\n   └ Puan: {node.Interaction}\n\n";
+                // ListBox'a düzenli şekilde ekle
+                string bilgi = $"{sira}. {node.Name}  (Bağ: {node.Neighbors.Count}, Puan: {node.Interaction})";
+                lstAlgorithmResults.Items.Add(bilgi);
                 sira++;
             }
-            MessageBox.Show(mesaj, "Analiz Sonucu", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
         // --- 4. RENKLENDİR BUTONU ---
@@ -158,7 +177,7 @@ namespace SociaGraph.UI
             System.Windows.Point p = e.GetPosition(mainCanvas);
             Node clickedNode = null;
 
-            // Tıklanan düğümü bul
+            // 1. Tıklanan düğümü bul
             foreach (var node in myGraph.Nodes)
             {
                 double distance = Math.Sqrt(Math.Pow(node.Location.X - p.X, 2) + Math.Pow(node.Location.Y - p.Y, 2));
@@ -169,27 +188,35 @@ namespace SociaGraph.UI
                 }
             }
 
-            // --- MOD KONTROLÜ ---
-            // Eğer "Taşıma Modu" kutucuğu işaretliyse:
+            // --- MOD KONTROLÜ (TAŞIMA) ---
             if (chkMoveMode.IsChecked == true)
             {
                 if (clickedNode != null)
                 {
                     isDragging = true;
                     draggedNode = clickedNode;
-                    clickedNode.NodeColor = System.Drawing.Color.Orange; // Taşındığını belli et
+                    clickedNode.NodeColor = System.Drawing.Color.Orange;
                 }
-                return; // Fonksiyonu burada kes, aşağıya (bağlantı koduna) inmesin!
+                return;
             }
 
-            // --- NORMAL BAĞLANTI MODU (Eski kodların burası) ---
+            // --- NORMAL TIKLAMA İŞLEMLERİ ---
             if (clickedNode != null)
             {
-                // ... (Senin mevcut bağlantı kurma kodların burada kalacak) ...
-                // KOD TEKRARI OLMASIN DİYE KISALTTIM, SEN ESKİ KODUNU KORU
-                // Sadece en başa if (chkMoveMode.IsChecked == true) bloğunu ekle yeter.
+                // A) SOL PANELİ GÜNCELLE (YENİ!)
+                lblNodeId.Text = clickedNode.Id.ToString();
+                lblNodeName.Text = clickedNode.Name;
+                lblNodeScore.Text = clickedNode.Interaction.ToString();
+                lblNodeDegree.Text = clickedNode.Neighbors.Count.ToString(); // Bağlantı sayısı
 
-                // Örnek:
+                // Komşuları ListBox'a doldur
+                lstNeighbors.Items.Clear();
+                foreach (var neighbor in clickedNode.Neighbors)
+                {
+                    lstNeighbors.Items.Add($"➡ {neighbor.Name} (ID: {neighbor.Id})");
+                }
+
+                // B) BAĞLANTI MANTIĞI (Eski kodun aynısı)
                 if (selectedNode == null)
                 {
                     selectedNode = clickedNode;
@@ -197,22 +224,37 @@ namespace SociaGraph.UI
                 }
                 else if (selectedNode != clickedNode)
                 {
-                    // Bağlantı kur...
                     Edge newEdge = new Edge(selectedNode, clickedNode);
                     myGraph.Edges.Add(newEdge);
+
                     selectedNode.NodeColor = System.Drawing.Color.Blue;
                     clickedNode.NodeColor = System.Drawing.Color.Blue;
+                    selectedNode = null;
+                }
+                else
+                {
+                    selectedNode.NodeColor = System.Drawing.Color.Blue;
                     selectedNode = null;
                 }
             }
             else
             {
-                // Boşluğa tıklayınca Node ekleme kodu...
+                // Boşluğa tıklayınca yeni Node ekle
                 int newId = myGraph.Nodes.Count + 1;
-                // ...
                 Node newNode = new Node(newId, "User " + newId, new System.Drawing.Point((int)p.X, (int)p.Y));
+
+                // Rastgele Puan Ver
+                Random rnd = new Random();
+                newNode.Interaction = rnd.Next(10, 500);
                 newNode.NodeColor = System.Drawing.Color.Blue;
+
                 myGraph.Nodes.Add(newNode);
+
+                if (selectedNode != null)
+                {
+                    selectedNode.NodeColor = System.Drawing.Color.Blue;
+                    selectedNode = null;
+                }
             }
 
             DrawGraph();
