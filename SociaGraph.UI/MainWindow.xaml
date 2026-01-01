@@ -63,7 +63,7 @@
                         </StackPanel>
                     </Border>
 
-                    <Border Background="White" CornerRadius="5" Padding="10" BorderBrush="#CCC" BorderThickness="1">
+                    <Border Background="White" CornerRadius="5" Padding="10" BorderBrush="#CCC" BorderThickness="1" Margin="0,0,0,15">
                         <StackPanel>
                             <TextBlock Text="📊 ANALİZ SONUÇLARI" FontWeight="Bold" Foreground="#007ACC" Margin="0,0,0,5"/>
 
@@ -77,10 +77,31 @@
                         </StackPanel>
                     </Border>
 
-                    <TextBlock Text="* Kısayollar:" FontSize="10" Foreground="Gray" Margin="0,10,0,0"/>
-                    <TextBlock Text="Shift+Tık: Dijkstra" FontSize="10" Foreground="Gray"/>
-                    <TextBlock Text="Ctrl+Tık: BFS" FontSize="10" Foreground="Gray"/>
-                    <TextBlock Text="Alt+Tık: A*" FontSize="10" Foreground="Gray"/>
+                    <Border Background="White" CornerRadius="5" Padding="10" BorderBrush="#CCC" BorderThickness="1" Margin="0,0,0,15">
+                        <StackPanel>
+                            <TextBlock Text="⌨️ KISAYOLLAR" FontWeight="Bold" Foreground="#007ACC" Margin="0,0,0,10"/>
+
+                            <DockPanel Margin="0,3">
+                                <TextBlock Text="Shift + Tık:" FontWeight="SemiBold" Width="110" Foreground="#444"/>
+                                <TextBlock Text="Dijkstra" FontWeight="Bold" Foreground="LimeGreen"/>
+                            </DockPanel>
+
+                            <DockPanel Margin="0,3">
+                                <TextBlock Text="Ctrl + Tık:" FontWeight="SemiBold" Width="110" Foreground="#444"/>
+                                <TextBlock Text="BFS" FontWeight="Bold" Foreground="OrangeRed"/>
+                            </DockPanel>
+
+                            <DockPanel Margin="0,3">
+                                <TextBlock Text="Alt + Tık:" FontWeight="SemiBold" Width="110" Foreground="#444"/>
+                                <TextBlock Text="A* (A-Star)" FontWeight="Bold" Foreground="DeepSkyBlue"/>
+                            </DockPanel>
+
+                            <DockPanel Margin="0,3">
+                                <TextBlock Text="Shift + Ctrl + Tık:" FontWeight="SemiBold" Width="110" Foreground="#444"/>
+                                <TextBlock Text="DFS" FontWeight="Bold" Foreground="Magenta"/>
+                            </DockPanel>
+                        </StackPanel>
+                    </Border>
 
                 </StackPanel>
             </ScrollViewer>
