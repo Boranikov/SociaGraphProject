@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using System.Drawing; // Color için (System.Drawing.Common gerekir)
+using System.Drawing; 
 
 namespace SocialNetworkApp
 {
@@ -12,10 +12,10 @@ namespace SocialNetworkApp
         // --- GÖRSELLEÞTÝRME RENGÝ ---
         public Color NodeColor { get; set; } = Color.White;
 
-        // --- KOMÞULAR (Baðlantý Sayýsý artýk Neighbors.Count ile bulunacak) ---
+        // --- KOMÞULAR ---
         public List<Node> Neighbors { get; set; } = new List<Node>();
 
-        // --- ÝSTERLERE GÖRE YENÝ ÖZELLÝKLER ---
+        
         public double ActivityScore { get; set; } // Özellik I (Aktiflik)
         public int InteractionCount { get; set; } // Özellik II (Etkileþim Sayýsý) 
         // -------------------------------------

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using Newtonsoft.Json; // ARTIK BUNU KULLANIYORUZ
+using Newtonsoft.Json; // Kayıt için
 
 namespace SocialNetworkApp
 {
@@ -70,7 +70,6 @@ namespace SocialNetworkApp
 
             string jsonString = File.ReadAllText(filePath);
 
-            // --- DEĞİŞEN KISIM (Newtonsoft) ---
             var data = JsonConvert.DeserializeObject<GraphData>(jsonString);
 
             if (data == null) return null;

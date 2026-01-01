@@ -8,9 +8,9 @@ using System.Drawing.Drawing2D;
 
 namespace SocialNetworkApp
 {
-    public class Coloring
+    public class Coloring // Komşu olan node lar farklı renk ile boyanıyor
     {
-        // 2. WELSH-POWELL RENKLENDİRME
+        // 2. WELSH-POWELL İLE RENKLENDİRME
         public static void WelshPowellColor(Graph graph)
         {
             var sortedNodes = graph.Nodes.OrderByDescending(n => n.Neighbors.Count).ToList();
@@ -20,7 +20,7 @@ namespace SocialNetworkApp
                 System.Drawing.Color.Yellow, System.Drawing.Color.Orange, System.Drawing.Color.Purple,
                 System.Drawing.Color.Cyan, System.Drawing.Color.Magenta, System.Drawing.Color.Brown,
                 System.Drawing.Color.Pink, System.Drawing.Color.Lime, System.Drawing.Color.Teal
-            };
+            }; 
 
             int colorIndex = 0;
             while (sortedNodes.Count > 0)

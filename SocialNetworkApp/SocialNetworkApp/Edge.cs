@@ -21,7 +21,7 @@ namespace SocialNetworkApp
             Weight = CalculateWeight();
         }
 
-        // ---  DÝNAMÝK AÐIRLIK FORMÜLÜ ---
+        // --- DÝNAMÝK AÐIRLIK FORMÜLÜ ---
         public double CalculateWeight()
         {
             // 1. Özellik Farklarý (Mutlak Deðer)
