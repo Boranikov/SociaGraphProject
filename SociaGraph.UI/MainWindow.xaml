@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SociaGraph.UI"
         mc:Ignorable="d"
-        Title="Sosyal Ağ Analizi - Proje 2" Height="600" Width="1000">
+        Title="Sosyal Ağ Analizi Projesi - KOÜ" Height="600" Width="1000">
 
     <Grid>
         <Grid.ColumnDefinitions>
@@ -100,6 +100,22 @@
                                 <TextBlock Text="Shift + Ctrl + Tık:" FontWeight="SemiBold" Width="110" Foreground="#444"/>
                                 <TextBlock Text="DFS" FontWeight="Bold" Foreground="Magenta"/>
                             </DockPanel>
+
+                            <DockPanel Margin="0,3">
+                                <TextBlock Text="Tek Sol Tık:" FontWeight="SemiBold" Width="110" Foreground="#444"/>
+                                <TextBlock Text="Seçme" FontWeight="Bold" Foreground="#444"/>
+                            </DockPanel>
+
+                            <DockPanel Margin="0,3">
+                                <TextBlock Text="Çift Sol Tık:" FontWeight="SemiBold" Width="110" Foreground="#444"/>
+                                <TextBlock Text="Yol oluşturma" FontWeight="Bold" Foreground="#444"/>
+                            </DockPanel>
+
+                            <DockPanel Margin="0,3">
+                                <TextBlock Text="Tek Sağ Tık:" FontWeight="SemiBold" Width="110" Foreground="#444"/>
+                                <TextBlock Text="Silme" FontWeight="Bold" Foreground="#444"/>
+                            </DockPanel>
+
                         </StackPanel>
                     </Border>
 
