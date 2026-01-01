@@ -17,7 +17,7 @@ namespace SocialNetworkApp
 
         // --- ÝSTERLERE GÖRE YENÝ ÖZELLÝKLER ---
         public double ActivityScore { get; set; } // Özellik I (Aktiflik)
-        public int InteractionCount { get; set; } // Özellik II (Etkileþim Sayýsý) - Eski adý 'Interaction' idi
+        public int InteractionCount { get; set; } // Özellik II (Etkileþim Sayýsý) 
         // -------------------------------------
 
         public Node(int id, string name, Point location)

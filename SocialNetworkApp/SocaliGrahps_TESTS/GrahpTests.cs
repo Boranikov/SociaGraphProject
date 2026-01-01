@@ -7,22 +7,24 @@ using System.Linq;
 namespace SocaliGrahps_TESTS
 {
     [TestClass]
-    public class GrahpTests
+    public class GraphTests // İsim düzeltildi: Grahp -> Graph
     {
         private Graph graph;
         private Node NodeA;
         private Node NodeB;
         private Node NodeC;
 
-        // Her Testen Önce Her şeyi sıfırlar
+        // Her Testten Önce Her şeyi sıfırlar
         [TestInitialize]
         public void Setup()
         {
             graph = new Graph();
-            NodeA = new Node(1,"A",new Point(0,0));
-            NodeB = new Node(2,"B",new Point(1,1));
-            NodeC = new Node(3,"C",new Point(1,1));
+            // Node constructor yapısı projenin son haline uygun
+            NodeA = new Node(1, "A", new Point(0, 0));
+            NodeB = new Node(2, "B", new Point(1, 1));
+            NodeC = new Node(3, "C", new Point(1, 1));
         }
+
         [TestMethod]
         public void AddNodeTest()
         {
@@ -30,9 +32,9 @@ namespace SocaliGrahps_TESTS
             graph.AddNode(NodeA);
 
             // Doğrulama
-            Assert.AreEqual(1,graph.Nodes.Count,"Edges Listesine Eklenemedi");
-
+            Assert.AreEqual(1, graph.Nodes.Count, "Nodes Listesine Eklenemedi");
         }
+
         [TestMethod]
         public void AddEdgeTest()
         {
@@ -40,17 +42,26 @@ namespace SocaliGrahps_TESTS
             graph.AddNode(NodeA);
             graph.AddNode(NodeB);
             graph.AddEdge(NodeA, NodeB);
+
+            // Eklenen kenarı al
             var createdEdge = graph.Edges[0];
 
             // Doğrulama
-            
-            Assert.AreEqual(1,graph.Edges.Count); //Edge listeye eklendi mi
-            Assert.AreEqual(NodeB, createdEdge.Target,"A'nın komşularında B yok"); // Komşulama doğru mu
-            Assert.AreEqual(NodeA, createdEdge.Source,"B'nin komşularında A yok"); // Komşulama doğru mu
-            Assert.AreEqual(1, NodeA.ConnectionCount); // Node bağlantı sayısı arttı mı
-            Assert.AreEqual(1, NodeB.ConnectionCount); // Node bağlantı sayısı arttı mı
+            Assert.AreEqual(1, graph.Edges.Count, "Edge listeye eklenmedi");
 
+            // Kenar yönü kontrolü
+            Assert.AreEqual(NodeA, createdEdge.Source, "Source hatalı");
+            Assert.AreEqual(NodeB, createdEdge.Target, "Target hatalı");
+
+            // Graph sınıfı Neighbors listesini dolduruyor, bu yüzden Neighbors.Count kontrol edilmeli
+            Assert.AreEqual(1, NodeA.Neighbors.Count, "NodeA'nın komşu sayısı artmadı");
+            Assert.AreEqual(1, NodeB.Neighbors.Count, "NodeB'nin komşu sayısı artmadı");
+
+            // Karşılıklı komşuluk kontrolü
+            Assert.IsTrue(NodeA.Neighbors.Contains(NodeB), "NodeA'nın komşularında NodeB yok");
+            Assert.IsTrue(NodeB.Neighbors.Contains(NodeA), "NodeB'nin komşularında NodeA yok");
         }
+
         [TestMethod]
         public void RemoveNodeTest()
         {
@@ -58,12 +69,21 @@ namespace SocaliGrahps_TESTS
             graph.AddNode(NodeA);
             graph.AddNode(NodeB);
             graph.AddEdge(NodeA, NodeB);
+
+            // Silme işlemi
             graph.RemoveNode(NodeA);
+
             // Doğrulama
-            Assert.AreEqual(1, graph.Nodes.Count, "Yanlış Sayıda Node Silindi"); // NodeB hala listede mi
-            Assert.IsFalse(graph.Nodes.Contains(NodeA), "NodeA Hala listede"); // NodeA silindi mi
+            Assert.AreEqual(1, graph.Nodes.Count, "Yanlış Sayıda Node Silindi"); // Sadece NodeB kalmalı
+            Assert.IsFalse(graph.Nodes.Contains(NodeA), "NodeA Hala listede"); // NodeA silinmiş olmalı
+
+            // NodeA silinince ona bağlı Edge de silinmeli
             Assert.AreEqual(0, graph.Edges.Count, "NodeA Silindi Ama Edge Hala duruyor");
+
+            // NodeB'nin komşularından da NodeA silinmeli
+            Assert.IsFalse(NodeB.Neighbors.Contains(NodeA), "NodeB hala NodeA'yı komşu sanıyor");
         }
+
         [TestMethod]
         public void RemoveEdgeTest()
         {
@@ -71,15 +91,20 @@ namespace SocaliGrahps_TESTS
             graph.AddNode(NodeA);
             graph.AddNode(NodeB);
             graph.AddEdge(NodeA, NodeB);
+
             var CreatedEdge = graph.Edges[0];
             graph.RemoveEdge(CreatedEdge);
 
             // Doğrulama
-            Assert.AreEqual(2, graph.Nodes.Count, "Nodelar Silindi"); // Nodelar hala duruyor mu
-            Assert.AreEqual(0, graph.Edges.Count, "Edge Silinmedi");  // Edge silindi mi
-            Assert.AreEqual(0, NodeA.ConnectionCount, "NodeA'nın bağlantı sayısı düşmedi"); // NodeA'da bağlantı var mı
-            Assert.AreEqual(0, NodeB.ConnectionCount, "NodeB'nin bağlantı sayısı düşmedi"); // NodeB'de bağlantı var mı
-            Assert.IsFalse(NodeA.Neighbors.Contains(NodeB), "NodeA ve NodeB hala komşu"); //NodeA ve NodeB hala komşu mu
+            Assert.AreEqual(2, graph.Nodes.Count, "Nodelar Silinmemeliydi");
+            Assert.AreEqual(0, graph.Edges.Count, "Edge Silinmedi");
+
+            // Bağlantı sayıları düşmeli
+            Assert.AreEqual(0, NodeA.Neighbors.Count, "NodeA'nın bağlantı sayısı düşmedi");
+            Assert.AreEqual(0, NodeB.Neighbors.Count, "NodeB'nin bağlantı sayısı düşmedi");
+
+            // Komşuluk bitmeli
+            Assert.IsFalse(NodeA.Neighbors.Contains(NodeB), "NodeA ve NodeB hala komşu");
         }
     }
 }

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.14.36623.8
+# Visual Studio Version 18
+VisualStudioVersion = 18.1.11312.151 d18.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SociaGraph.UI", "SociaGraph.UI.csproj", "{A21983B3-9449-4F6B-B2FD-6E3F04812C8D}"
 EndProject
@@ -11,6 +11,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		README.md = README.md
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocaliGrahps_TESTS", "..\SocialNetworkApp\SocaliGrahps_TESTS\SocaliGrahps_TESTS.csproj", "{4E1C5B11-66CE-4692-B02B-DCC693F24EC2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -26,6 +28,10 @@ Global
 		{043C62B6-7CDB-4BFA-9217-A27BB2DB5DE0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{043C62B6-7CDB-4BFA-9217-A27BB2DB5DE0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{043C62B6-7CDB-4BFA-9217-A27BB2DB5DE0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4E1C5B11-66CE-4692-B02B-DCC693F24EC2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4E1C5B11-66CE-4692-B02B-DCC693F24EC2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4E1C5B11-66CE-4692-B02B-DCC693F24EC2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4E1C5B11-66CE-4692-B02B-DCC693F24EC2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

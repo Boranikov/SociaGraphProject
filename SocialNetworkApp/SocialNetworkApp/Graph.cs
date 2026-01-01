@@ -35,7 +35,6 @@ namespace SocialNetworkApp
                 source.Neighbors.Add(target);
                 target.Neighbors.Add(source);
 
-                // ESKÝDEN BURADA ConnectionCount++ VARDI, ARTIK YOK.
             }
         }
 

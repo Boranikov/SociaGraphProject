@@ -21,7 +21,7 @@ namespace SocialNetworkApp
             Weight = CalculateWeight();
         }
 
-        // --- ÝSTER 4.3: DÝNAMÝK AÐIRLIK FORMÜLÜ ---
+        // ---  DÝNAMÝK AÐIRLIK FORMÜLÜ ---
         public double CalculateWeight()
         {
             // 1. Özellik Farklarý (Mutlak Deðer)
@@ -34,12 +34,6 @@ namespace SocialNetworkApp
             // 2. Formülün Paydasý
             // Payda = (1 + FarkAktif) * (2 + FarkEtkilesim) * (2 + FarkBaglanti)^2
             double denominator = (1 + diffActivity) * (2 + diffInteraction) * Math.Pow((2 + diffConnection), 2);
-
-            // 3. Sonuç (1 / Payda)
-            // Sonuç 0 ile 1 arasýnda küçük bir sayý çýkacaktýr.
-            // Örn: 0.005 veya 0.12 gibi.
-            // Görsellik bozulmasýn diye ekranda gösterirken 100 ile çarpabiliriz 
-            // ama algoritmalar bu ham deðeri kullanmalý.
 
             double result = 1.0 / denominator;
 
