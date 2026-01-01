@@ -1,52 +1,69 @@
-﻿# 🕸️ SociaGraph - Social Network Visualization & Analysis Tool
+﻿# 🕸️ Sosyal Ağ Analizi Uygulaması (Social Network Analysis)
 
-SociaGraph is a WPF-based desktop application developed to visualize, edit, and analyze social network graphs. It allows users to create nodes and edges interactively, perform centrality analysis, and apply graph coloring algorithms.
+> **Ders:** Yazılım Geliştirme Laboratuvarı-I - Proje 2  
+> **Tarih:** Ocak 2026  
+> **Durum:** Tamamlandı ✅
 
-![Project Screenshot]()
-## 🚀 Features
+## 📖 Proje Hakkında
+Bu proje, kullanıcılar arasındaki ilişkileri bir graf yapısı olarak modelleyen, görselleştiren ve üzerinde çeşitli analiz algoritmaları çalıştıran bir masaüstü uygulamasıdır. Kullanıcılar (düğümler) ve etkileşimler (kenarlar) dinamik olarak yönetilebilir, JSON formatında kaydedilip tekrar yüklenebilir.
 
-* **Interactive Graph Editor:**
-    * **Add Nodes:** Create user nodes with random interaction scores.
-    * **Connect Users:** Link nodes dynamically to define relationships.
-    * **Drag & Drop:** Move nodes around the canvas with real-time edge updating.
-    * **Delete:** Right-click to remove nodes and their connections.
-* **Data Persistence:** Save and Load graph structures using JSON serialization.
-* **Algorithmic Analysis:**
-    * **Top 5 Influencers:** Calculates the most influential users based on Degree Centrality (Connection Count) and Interaction Scores.
-    * **Graph Coloring:** Implements the **Welsh-Powell Algorithm** to assign colors to nodes, ensuring no two connected nodes share the same color.
-* **User Interface:** Clean WPF Canvas implementation with mode switching (Editing vs. Moving).
-
-## 🛠️ Technologies & Tools
-
-* **Language:** C# (.NET Framework)
-* **UI Framework:** WPF (Windows Presentation Foundation)
-* **Data Format:** JSON (Newtonsoft.Json)
-* **Concepts:** Graph Theory, OOP, File I/O, Event-Driven Programming.
-
-## 🧮 Algorithms Used
-
-### 1. Top 5 Influencers Analysis
-This feature identifies the most popular users in the network. The ranking logic is:
-1.  **Primary Sort:** Number of Connections (Neighbors).
-2.  **Secondary Sort:** Interaction Score (Activity points generated upon creation).
-3.  Returns the top 5 nodes.
-
-### 2. Welsh-Powell Graph Coloring
-To visualize distinct groups or separate connected users visually:
-1.  Nodes are sorted by their degree (number of connections) in descending order.
-2.  The algorithm iterates through the list, assigning the first available color that is not used by any neighbor.
-3.  This ensures high visual clarity for complex networks.
-
-## 🎮 How to Use
-
-1.  **Create:** Click on empty space to add a "User".
-2.  **Connect:** Click a node (turns Red), then click another node to connect them.
-3.  **Move:** Check the **"Taşıma Modu"** box to drag nodes.
-4.  **Analyze:** Click **"Analiz (Top 5)"** to see the leaderboard.
-5.  **Color:** Click **"Renklendir"** to run the Welsh-Powell algorithm.
-6.  **Save/Load:** Use the JSON buttons to backup your graph.
+### 🎯 Amaç
+- Sosyal ağ verilerini **Graf Teorisi** kullanarak modellemek.
+- **BFS, DFS, Dijkstra, A\*** gibi temel algoritmaları gerçek hayat senaryosunda uygulamak.
+- **Welsh-Powell** algoritması ile ağ renklendirmesi yapmak.
+- Karmaşık verileri **WPF** ile görselleştirmek.
 
 ---
 
-### 👤 Author
-**[Göksel Bekdemir]** *Student / Developer*
+## 🏗️ Mimari Tasarım (Class Diagram)
+Proje, Nesne Yönelimli Programlama (OOP) prensiplerine uygun olarak tasarlanmıştır. Aşağıdaki diyagramda sınıflar arası ilişkiler gösterilmektedir.
+
+```mermaid
+classDiagram
+    class Node {
+        +int Id
+        +string Name
+        +Point Location
+        +Color NodeColor
+        +List~Node~ Neighbors
+        +double ActivityScore
+        +int InteractionCount
+    }
+
+    class Edge {
+        +Node Source
+        +Node Target
+        +double Weight
+        +Color EdgeColor
+        +int Thickness
+        +CalculateWeight()
+    }
+
+    class Graph {
+        +List~Node~ Nodes
+        +List~Edge~ Edges
+        +AddNode(Node)
+        +AddEdge(Node, Node)
+        +RemoveNode(Node)
+        +RemoveEdge(Edge)
+    }
+
+    class GraphAlgorithms {
+        +GetTopInfluencers(Graph, int)
+        +WelshPowellColor(Graph)
+        +Dijkstra_ShortestPath(Graph, Node, Node)
+        +BFS_ShortestPath(Graph, Node, Node)
+        +DFS_FindPath(Node, Node)
+        +AStar_Path(Graph, Node, Node)
+    }
+
+    class FileManager {
+        +SaveGraph(Graph, string)
+        +LoadGraph(string)
+    }
+
+    Graph "1" *-- "*" Node : Contains
+    Graph "1" *-- "*" Edge : Contains
+    Edge "1" --> "2" Node : Connects
+    GraphAlgorithms ..> Graph : Analyzes
+    FileManager ..> Graph : Persists

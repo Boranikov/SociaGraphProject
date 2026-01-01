@@ -245,6 +245,48 @@ namespace SocialNetworkApp
             }
             return null; // Yol bulunamadý
         }
+        // --- BAÐLI BÝLEÞEN SAYISI (Connected Components) ---
+        // Ýster 3.2: Ayrýk topluluklarýn tespiti
+        public static int CalculateConnectedComponents(Graph graph)
+        {
+            if (graph.Nodes.Count == 0) return 0;
+
+            HashSet<Node> visited = new HashSet<Node>();
+            int componentCount = 0;
+
+            foreach (var node in graph.Nodes)
+            {
+                // Eðer bu düðüme daha önce hiç uðramadýysak, yeni bir "ada" bulduk demektir.
+                if (!visited.Contains(node))
+                {
+                    componentCount++;
+                    // Bu adadaki herkesi ziyaret edildi olarak iþaretle (BFS ile)
+                    MarkComponent(node, visited);
+                }
+            }
+            return componentCount;
+        }
+
+        // Yardýmcý Fonksiyon (Sadece bu adayý gezmek için)
+        private static void MarkComponent(Node startNode, HashSet<Node> visited)
+        {
+            Queue<Node> queue = new Queue<Node>();
+            queue.Enqueue(startNode);
+            visited.Add(startNode);
+
+            while (queue.Count > 0)
+            {
+                var current = queue.Dequeue();
+                foreach (var neighbor in current.Neighbors)
+                {
+                    if (!visited.Contains(neighbor))
+                    {
+                        visited.Add(neighbor);
+                        queue.Enqueue(neighbor);
+                    }
+                }
+            }
+        }
     }
 
 }

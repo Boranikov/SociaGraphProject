@@ -84,6 +84,8 @@ namespace SociaGraph.UI
             // 3. ALGORİTMAYI ÇALIŞTIR
             var top5List = GraphAlgorithms.GetTopInfluencers(myGraph, 5);
 
+            int componentCount = GraphAlgorithms.CalculateConnectedComponents(myGraph);
+
             // 4. SAYAÇ DURDUR
             sw.Stop();
 
@@ -92,6 +94,8 @@ namespace SociaGraph.UI
 
             lstAlgorithmResults.Items.Clear(); // Listeyi temizle
             lstAlgorithmResults.Items.Add("--- 🏆 EN ETKİLİ 5 KULLANICI ---");
+            lstAlgorithmResults.Items.Add($"Ayrık Topluluk: {componentCount}");
+            lstAlgorithmResults.Items.Add("-----------------------------");
 
             int sira = 1;
             foreach (var node in top5List)
