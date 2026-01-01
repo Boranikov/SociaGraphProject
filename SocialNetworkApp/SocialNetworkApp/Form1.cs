@@ -168,7 +168,8 @@ namespace SocialNetworkApp
 
             if (selectedNode != null) // Var olan düğüm seçildiyse onun bilgilerini göster
             {
-                MessageBox.Show($"Seçilen Kişi: {clickedNode.Name}\nBağlantılar: {clickedNode.ConnectionCount}\nId: {clickedNode.Id}");
+                // DÜZELTME BURADA: ConnectionCount yerine Neighbors.Count yazıldı.
+                MessageBox.Show($"Seçilen Kişi: {clickedNode.Name}\nBağlantılar: {clickedNode.Neighbors.Count}\nId: {clickedNode.Id}");
             }
             else // Yeni düğüm ekle
             {

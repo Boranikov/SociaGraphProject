@@ -1,252 +1,289 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms.VisualStyles;
-using System.Windows.Forms;
 
 namespace SocialNetworkApp
 {
-    public class GraphAlgorithms
+    internal class GraphAlgorithms
     {
-
         // ----------------------------- BFS --------------------------------------//
         public static List<Node> BFS_ShortestPath(Graph graph, Node start, Node end)
         {
-            
             if (start == null || end == null) return null;
             var previous = new Dictionary<Node, Node>(); //Hangi düðüme nerden geldik
             var queue = new Queue<Node>(); //BFS için kuyruk
             var visited = new HashSet<Node>(); //Ziyaret edilen düðümler
 
-            queue.Enqueue(start); //Baþlangýç düðümünü kuyruða ekle
-            visited.Add(start); //Baþlangýç düðümünü ziyaret edilenlere ekle
-            while (queue.Count > 0)
-            {
-                var current = queue.Dequeue(); //Kuyruktan düðüm çýkar
-                if (current == end) break; //Hedefe ulaþýldýysa döngüyü kýr
-                foreach (var neighbor in current.Neighbors)
-                {
-                    if (!visited.Contains(neighbor))
-                    {
-                        visited.Add(neighbor); //Komþuyu ziyaret edilenlere ekle
-                        previous[neighbor] = current; //Komþunun önceki düðümünü ayarla
-                        queue.Enqueue(neighbor); //Komþuyu kuyruða ekle
-                    }
-                }
-            }
-            if (!previous.ContainsKey(end) && start != end)
-            {
-                return null; //Hedefe ulaþýlamadýysa null döndür
-            }
-            var path = new List<Node>();
-            var curr = end;
-            while (curr != null && previous.ContainsKey(curr))
-            {
-                path.Add(curr);
-                curr = previous[curr];
-            }
-            path.Add(start); //Baþlangýç düðümünü ekle
-            path.Reverse(); //Yolu ters çevir
-            return path; //Yolu döndür
-        }
-        // ----------------------------- BFS BÝTTÝ --------------------------------------//
-        // ----------------------------- DFS --------------------------------------//
-        public static List<Node> DFS_FindPath(Node start, Node end) 
+        // 2. WELSH-POWELL RENKLENDÝRME
+        public static void WelshPowellColor(Graph graph)
         {
-            if (start == null || end == null) return null;
-            var previous = new Dictionary<Node, Node>(); //Hangi düðüme nerden geldik
-            var stack = new Stack<Node>(); //DFS için yýðýn
-            var visited = new HashSet<Node>(); //Ziyaret edilen düðümler
-            stack.Push(start); //Baþlangýç düðümünü yýðýna ekle
-            while (stack.Count > 0) 
+            var sortedNodes = graph.Nodes.OrderByDescending(n => n.Neighbors.Count).ToList();
+            var colors = new List<System.Drawing.Color>
             {
-                var current = stack.Pop(); //stacktan en son eklenen düðüm çýkar
-                if (!visited.Contains(current)) 
+                System.Drawing.Color.Red, System.Drawing.Color.Blue, System.Drawing.Color.Green,
+                System.Drawing.Color.Yellow, System.Drawing.Color.Orange, System.Drawing.Color.Purple,
+                System.Drawing.Color.Cyan, System.Drawing.Color.Magenta, System.Drawing.Color.Brown,
+                System.Drawing.Color.Pink, System.Drawing.Color.Lime, System.Drawing.Color.Teal
+            };
+
+            int colorIndex = 0;
+            while (sortedNodes.Count > 0)
+            {
+                var currentColor = colors[colorIndex % colors.Count];
+                var coloredInThisRound = new List<Node>();
+
+                var firstNode = sortedNodes[0];
+                firstNode.NodeColor = currentColor;
+                coloredInThisRound.Add(firstNode);
+                sortedNodes.RemoveAt(0);
+
+                for (int i = 0; i < sortedNodes.Count; i++)
                 {
-                    visited.Add(current);
-                    if (current == end) break; //Hedefe ulaþýldýysa döngüyü kýr
-                    foreach (var neighbor in current.Neighbors) 
+                    var node = sortedNodes[i];
+                    bool isNeighbor = false;
+                    foreach (var coloredNode in coloredInThisRound)
                     {
-                        if (!visited.Contains(neighbor))
+                        if (node.Neighbors.Contains(coloredNode))
                         {
-                            if (!previous.ContainsKey(neighbor))
-                            {
-                                previous[neighbor] = current;
-                                stack.Push(neighbor);
-                            }
+                            isNeighbor = true;
+                            break;
                         }
                     }
+
+                    if (!isNeighbor)
+                    {
+                        node.NodeColor = currentColor;
+                        coloredInThisRound.Add(node);
+                        sortedNodes.RemoveAt(i);
+                        i--;
+                    }
                 }
+                colorIndex++;
             }
-            // Yolu geriye doðru oluþtur
-            if (!previous.ContainsKey(end) && start != end) return null;
-
-            var path = new List<Node>();
-            var curr = end;
-            while (curr != null && previous.ContainsKey(curr))
-            {
-                path.Add(curr);
-                curr = previous[curr];
-            }
-            path.Add(start);
-            path.Reverse();
-
-            return path;
         }
-        // ----------------------------- DFS BÝTTÝ --------------------------------------//
-        // ----------------------------- Dijkstra --------------------------------------//
+
+        // --- DIJKSTRA ---
         public static List<Node> Dijkstra_ShortestPath(Graph graph, Node start, Node end)
         {
-            var distance = new Dictionary<Node, double>(); 
+            var distances = new Dictionary<Node, double>();
             var previous = new Dictionary<Node, Node>();
-            var nodesToVisit = new List<Node>();
-            // Baþlangýç her nokta sonsuz mesafe, baþlangýç 0
+            var unvisited = new List<Node>();
+
             foreach (var node in graph.Nodes)
             {
-                distance[node] = double.MaxValue;
-                nodesToVisit.Add(node);
+                distances[node] = double.MaxValue;
+                previous[node] = null;
+                unvisited.Add(node);
             }
-            distance[start] = 0;
-            while (nodesToVisit.Count > 0)
-            {
-                // Mesafesi en küçük olan düðümü seç
-                nodesToVisit.Sort((x,y) =>  distance[x].CompareTo(distance[y]));
-                var current = nodesToVisit[0];
-                nodesToVisit.RemoveAt(0);
-                // Hedef ulaþýldýysa veya kalanlar sonsuz uzaklýksa dur
-                if (current == end) break;
-                if (distance[current] == double.MaxValue) break;
-                // Komþularý ve kenar aðýrlýklarýný bul
-                foreach ( var edge in graph.Edges)
-                {
-                    Node neighbor = null;
-                    if (edge.Source == current) neighbor = edge.Target;
-                    else if (edge.Target == current) neighbor = edge.Source;
-                    if (neighbor != null && nodesToVisit.Contains(neighbor))
-                    {
-                        double newDist = distance[current] + edge.Weight; // Mevcut yol + Kenar Aðýrlýðý
 
-                        // Daha kýsa bir yol bulduysak güncelle
-                        if (newDist < distance[neighbor])
+            distances[start] = 0;
+
+            while (unvisited.Count > 0)
+            {
+                unvisited.Sort((a, b) => distances[a].CompareTo(distances[b]));
+                var current = unvisited[0];
+                unvisited.RemoveAt(0);
+
+                if (current == end) break;
+                if (distances[current] == double.MaxValue) break;
+
+                // Kenarlarý bul (Aðýrlýk için)
+                foreach (var neighbor in current.Neighbors)
+                {
+                    if (!unvisited.Contains(neighbor)) continue;
+
+                    var edge = graph.Edges.FirstOrDefault(e =>
+                        (e.Source == current && e.Target == neighbor) ||
+                        (e.Source == neighbor && e.Target == current));
+
+                    if (edge != null)
+                    {
+                        double alt = distances[current] + edge.Weight;
+                        if (alt < distances[neighbor])
                         {
-                            distance[neighbor] = newDist;
+                            distances[neighbor] = alt;
                             previous[neighbor] = current;
                         }
                     }
                 }
             }
-            // Yolu geriye doðru oluþtur
-            if (!previous.ContainsKey(end) && start != end) return null;
 
-            var path = new List<Node>();
-            var curr = end;
-            while (curr != null && previous.ContainsKey(curr))
-            {
-                path.Add(curr);
-                curr = previous[curr];
-            }
-            path.Add(start);
-            path.Reverse();
-
-            return path;
+            return ReconstructPath(previous, end);
         }
-        // ----------------------------- Dijkstra BÝTTÝ --------------------------------------//
-        // ----------------------------- A* --------------------------------------//
-        public static List<Node> AStar_Path(Graph graph, Node start ,Node end)
+
+        // --- BFS ---
+        public static List<Node> BFS_ShortestPath(Graph graph, Node start, Node end)
         {
-            // A* gerekli listeler
-            var openSet = new List<Node>();
-            var previous = new Dictionary<Node, Node >();
-            // gScore: Baþlangýçtan buraya kadar olan gerçek maliyet
+            var previous = new Dictionary<Node, Node>();
+            var visited = new HashSet<Node>();
+            var queue = new Queue<Node>();
+
+            queue.Enqueue(start);
+            visited.Add(start);
+
+            while (queue.Count > 0)
+            {
+                var current = queue.Dequeue();
+                if (current == end) break;
+
+                foreach (var neighbor in current.Neighbors)
+                {
+                    if (!visited.Contains(neighbor))
+                    {
+                        visited.Add(neighbor);
+                        previous[neighbor] = current;
+                        queue.Enqueue(neighbor);
+                    }
+                }
+            }
+
+            return ReconstructPath(previous, end);
+        }
+
+        // --- A* (A-STAR) ---
+        public static List<Node> AStar_Path(Graph graph, Node start, Node end)
+        {
             var gScore = new Dictionary<Node, double>();
-            // fScore: gScore + Heuristic (Tahmini toplam maliyet)
             var fScore = new Dictionary<Node, double>();
-            // Tüm düðümler için baþlangýç deðerini sonsuz yap
+            var previous = new Dictionary<Node, Node>();
+            var openSet = new List<Node> { start };
+
             foreach (var node in graph.Nodes)
             {
                 gScore[node] = double.MaxValue;
                 fScore[node] = double.MaxValue;
             }
-            // Baþlangýç ayarý 
+
             gScore[start] = 0;
             fScore[start] = Heuristic(start, end);
-            openSet.Add(start);
+
             while (openSet.Count > 0)
             {
-                // fSroce en düþük seç
-                openSet.Sort((x,y) => fScore[x].CompareTo(fScore[y]));
+                openSet.Sort((a, b) => fScore[a].CompareTo(fScore[b]));
                 var current = openSet[0];
-                // Hedef ulaþýldý mý ?
-                if (current == end)
-                {
-                    return RePath(previous, start, end);
-                }
+
+                if (current == end) return ReconstructPath(previous, end);
+
                 openSet.RemoveAt(0);
 
-                // Komþularý gezme
-
-                foreach (var edge in graph.Edges)
+                foreach (var neighbor in current.Neighbors)
                 {
-                    Node neighbor = null;
-                    if (edge.Source == current)
-                    {
-                        neighbor = edge.Target;
-                    }
-                    else if (edge.Target == current)
-                    {
-                        neighbor = edge.Source;
-                    }
+                    var edge = graph.Edges.FirstOrDefault(e =>
+                        (e.Source == current && e.Target == neighbor) ||
+                        (e.Source == neighbor && e.Target == current));
 
-                    if (neighbor != null)
+                    if (edge == null) continue;
+
+                    double tentative_gScore = gScore[current] + edge.Weight;
+
+                    if (tentative_gScore < gScore[neighbor])
                     {
-                        // Yeni maliyeti hesaplama
-                        double score = gScore[current] + edge.Weight;
-                        if (score < gScore[neighbor])
-                        {
-                            previous[neighbor]=current;
-                            gScore[neighbor] = score;
+                        previous[neighbor] = current;
+                        gScore[neighbor] = tentative_gScore;
+                        fScore[neighbor] = gScore[neighbor] + Heuristic(neighbor, end);
 
-                            // Gerçek maliyet + Kuþ uçuþu kalan mesafe
-                            fScore[neighbor] = gScore[neighbor] + Heuristic(neighbor, end);
-
-                            if (!openSet.Contains(neighbor))
-                            {
-                                openSet.Add(neighbor);
-                            }
-                        }
+                        if (!openSet.Contains(neighbor)) openSet.Add(neighbor);
                     }
                 }
-
             }
-            return null; // Yol yoksa
+
+            return null;
         }
+
         private static double Heuristic(Node a, Node b)
         {
-            // Euclidean (Pisagor Teoremi): Ýki nokta arasýndaki kuþ uçuþu mesafe
-            // Formül: Kök içinde ((x1-x2)^2 + (y1-y2)^2)
-
-            double deltaX = a.Location.X - b.Location.X;
-            double deltaY = a.Location.Y - b.Location.Y;
-
-            return Math.Sqrt((deltaX * deltaX) + (deltaY * deltaY));
+            // Öklid mesafesi (Kuþ uçuþu)
+            return Math.Sqrt(Math.Pow(a.Location.X - b.Location.X, 2) + Math.Pow(a.Location.Y - b.Location.Y, 2));
         }
 
-        // --- Yolu Geriye Doðru Oluþturma ---
-        private static List<Node> RePath(Dictionary<Node, Node> previous, Node start, Node end)
+        private static List<Node> ReconstructPath(Dictionary<Node, Node> previous, Node end)
         {
+            if (!previous.ContainsKey(end) && previous.Count > 0) return null; // Yol yoksa
+
             var path = new List<Node>();
-            var curr = end;
-            while (curr != null && previous.ContainsKey(curr))
+            var current = end;
+            while (current != null)
             {
-                path.Add(curr);
-                curr = previous[curr];
+                path.Add(current);
+                if (previous.ContainsKey(current))
+                    current = previous[current];
+                else
+                    current = null;
             }
-            path.Add(start);
             path.Reverse();
-            return path;
+            return path.Count > 1 ? path : null;
         }
-        // ----------------------------- A* BÝTTÝ --------------------------------------//
+        // --- DFS (Derinlik Öncelikli Arama) ---
+        public static List<Node> DFS_FindPath(Node start, Node end)
+        {
+            var visited = new HashSet<Node>();
+            var stack = new Stack<Node>();
+            var parentMap = new Dictionary<Node, Node>(); // Yolu geri izlemek için
+
+            stack.Push(start);
+            visited.Add(start);
+            parentMap[start] = null;
+
+            while (stack.Count > 0)
+            {
+                var current = stack.Pop();
+
+                if (current == end) return ReconstructPath(parentMap, end);
+
+                foreach (var neighbor in current.Neighbors)
+                {
+                    if (!visited.Contains(neighbor))
+                    {
+                        visited.Add(neighbor);
+                        parentMap[neighbor] = current;
+                        stack.Push(neighbor);
+                    }
+                }
+            }
+            return null; // Yol bulunamadý
+        }
+        // --- BAÐLI BÝLEÞEN SAYISI (Connected Components) ---
+        // Ýster 3.2: Ayrýk topluluklarýn tespiti
+        public static int CalculateConnectedComponents(Graph graph)
+        {
+            if (graph.Nodes.Count == 0) return 0;
+
+            HashSet<Node> visited = new HashSet<Node>();
+            int componentCount = 0;
+
+            foreach (var node in graph.Nodes)
+            {
+                // Eðer bu düðüme daha önce hiç uðramadýysak, yeni bir "ada" bulduk demektir.
+                if (!visited.Contains(node))
+                {
+                    componentCount++;
+                    // Bu adadaki herkesi ziyaret edildi olarak iþaretle (BFS ile)
+                    MarkComponent(node, visited);
+                }
+            }
+            return componentCount;
+        }
+
+        // Yardýmcý Fonksiyon (Sadece bu adayý gezmek için)
+        private static void MarkComponent(Node startNode, HashSet<Node> visited)
+        {
+            Queue<Node> queue = new Queue<Node>();
+            queue.Enqueue(startNode);
+            visited.Add(startNode);
+
+            while (queue.Count > 0)
+            {
+                var current = queue.Dequeue();
+                foreach (var neighbor in current.Neighbors)
+                {
+                    if (!visited.Contains(neighbor))
+                    {
+                        visited.Add(neighbor);
+                        queue.Enqueue(neighbor);
+                    }
+                }
+            }
+        }
     }
+
 }

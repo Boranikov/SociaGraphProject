@@ -8,7 +8,7 @@ using System.Drawing.Drawing2D;
 
 namespace SocialNetworkApp
 {
-    internal class Coloring
+    public class Coloring
     {
         private const int NodeRadius = 35; // Düğüm yarıçapı
 
