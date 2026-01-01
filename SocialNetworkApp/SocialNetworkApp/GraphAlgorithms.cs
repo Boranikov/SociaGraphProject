@@ -4,64 +4,10 @@ using System.Linq;
 
 namespace SocialNetworkApp
 {
-    internal class GraphAlgorithms
+    public static class GraphAlgorithms
     {
-        // ----------------------------- BFS --------------------------------------//
-        public static List<Node> BFS_ShortestPath(Graph graph, Node start, Node end)
-        {
-            if (start == null || end == null) return null;
-            var previous = new Dictionary<Node, Node>(); //Hangi düðüme nerden geldik
-            var queue = new Queue<Node>(); //BFS için kuyruk
-            var visited = new HashSet<Node>(); //Ziyaret edilen düðümler
 
-        // 2. WELSH-POWELL RENKLENDÝRME
-        public static void WelshPowellColor(Graph graph)
-        {
-            var sortedNodes = graph.Nodes.OrderByDescending(n => n.Neighbors.Count).ToList();
-            var colors = new List<System.Drawing.Color>
-            {
-                System.Drawing.Color.Red, System.Drawing.Color.Blue, System.Drawing.Color.Green,
-                System.Drawing.Color.Yellow, System.Drawing.Color.Orange, System.Drawing.Color.Purple,
-                System.Drawing.Color.Cyan, System.Drawing.Color.Magenta, System.Drawing.Color.Brown,
-                System.Drawing.Color.Pink, System.Drawing.Color.Lime, System.Drawing.Color.Teal
-            };
-
-            int colorIndex = 0;
-            while (sortedNodes.Count > 0)
-            {
-                var currentColor = colors[colorIndex % colors.Count];
-                var coloredInThisRound = new List<Node>();
-
-                var firstNode = sortedNodes[0];
-                firstNode.NodeColor = currentColor;
-                coloredInThisRound.Add(firstNode);
-                sortedNodes.RemoveAt(0);
-
-                for (int i = 0; i < sortedNodes.Count; i++)
-                {
-                    var node = sortedNodes[i];
-                    bool isNeighbor = false;
-                    foreach (var coloredNode in coloredInThisRound)
-                    {
-                        if (node.Neighbors.Contains(coloredNode))
-                        {
-                            isNeighbor = true;
-                            break;
-                        }
-                    }
-
-                    if (!isNeighbor)
-                    {
-                        node.NodeColor = currentColor;
-                        coloredInThisRound.Add(node);
-                        sortedNodes.RemoveAt(i);
-                        i--;
-                    }
-                }
-                colorIndex++;
-            }
-        }
-
+        
         // --- DIJKSTRA ---
         public static List<Node> Dijkstra_ShortestPath(Graph graph, Node start, Node end)
         {
@@ -213,6 +159,7 @@ namespace SocialNetworkApp
             path.Reverse();
             return path.Count > 1 ? path : null;
         }
+
         // --- DFS (Derinlik Öncelikli Arama) ---
         public static List<Node> DFS_FindPath(Node start, Node end)
         {
@@ -242,8 +189,8 @@ namespace SocialNetworkApp
             }
             return null; // Yol bulunamadý
         }
-        // --- BAÐLI BÝLEÞEN SAYISI (Connected Components) ---
-        // Ýster 3.2: Ayrýk topluluklarýn tespiti
+
+        // --- BAÐLI BÝLEÞEN SAYISI  ---
         public static int CalculateConnectedComponents(Graph graph)
         {
             if (graph.Nodes.Count == 0) return 0;
@@ -253,18 +200,18 @@ namespace SocialNetworkApp
 
             foreach (var node in graph.Nodes)
             {
-                // Eðer bu düðüme daha önce hiç uðramadýysak, yeni bir "ada" bulduk demektir.
+                
                 if (!visited.Contains(node))
                 {
                     componentCount++;
-                    // Bu adadaki herkesi ziyaret edildi olarak iþaretle (BFS ile)
+                   
                     MarkComponent(node, visited);
                 }
             }
             return componentCount;
         }
 
-        // Yardýmcý Fonksiyon (Sadece bu adayý gezmek için)
+        // Yardýmcý Fonksiyon 
         private static void MarkComponent(Node startNode, HashSet<Node> visited)
         {
             Queue<Node> queue = new Queue<Node>();
@@ -284,6 +231,17 @@ namespace SocialNetworkApp
                 }
             }
         }
-    }
 
+        // --- EN ETKÝLÝ KULLANICILAR  ---
+        public static List<Node> GetTopInfluencers(Graph graph, int count)
+        {
+            if (graph == null || graph.Nodes == null)
+                return new List<Node>();
+
+            return graph.Nodes
+                        .OrderByDescending(n => n.InteractionCount)
+                        .Take(count)
+                        .ToList();
+        }
+    }
 }

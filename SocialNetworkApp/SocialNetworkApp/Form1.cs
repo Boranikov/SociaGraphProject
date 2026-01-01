@@ -26,7 +26,7 @@ namespace SocialNetworkApp
         private List<Node> dfsPath = null;
         private List<Node> djkPath = null;
         private List<Node> AStarPath = null;
-        private Coloring coloring = new Coloring();
+
 
         public Form1()
         {
@@ -112,7 +112,7 @@ namespace SocialNetworkApp
                 base.OnPaint(e);
 
             // Coloring sınıfındaki Draw metodunu çağırıyoruz
-            coloring.Draw(e.Graphics, graph, selectedNode, selectedEdge, shortestPath, dfsPath, djkPath, AStarPath);
+
         }
 
         protected override void OnMouseClick(MouseEventArgs e)

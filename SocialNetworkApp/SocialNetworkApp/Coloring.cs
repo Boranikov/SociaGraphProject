@@ -10,91 +10,51 @@ namespace SocialNetworkApp
 {
     public class Coloring
     {
-        private const int NodeRadius = 35; // Düğüm yarıçapı
-
-        // Ana çizim metodu
-        public void Draw(Graphics g, Graph graph, Node selectedNode, Edge selectedEdge,
-                         List<Node> shortestPath, List<Node> dfsPath, List<Node> djkPath, List<Node>AStarPath)
+        // 2. WELSH-POWELL RENKLENDİRME
+        public static void WelshPowellColor(Graph graph)
         {
-            g.SmoothingMode = SmoothingMode.AntiAlias;
-
-            // --- 1. KATMAN: KENARLAR VE AĞIRLIKLAR (En altta) ---
-            foreach (var edge in graph.Edges)
+            var sortedNodes = graph.Nodes.OrderByDescending(n => n.Neighbors.Count).ToList();
+            var colors = new List<System.Drawing.Color>
             {
-                // Rengi ve Kalınlığı Belirle
-                Color edgeColor;
-                float edgeWidth;
+                System.Drawing.Color.Red, System.Drawing.Color.Blue, System.Drawing.Color.Green,
+                System.Drawing.Color.Yellow, System.Drawing.Color.Orange, System.Drawing.Color.Purple,
+                System.Drawing.Color.Cyan, System.Drawing.Color.Magenta, System.Drawing.Color.Brown,
+                System.Drawing.Color.Pink, System.Drawing.Color.Lime, System.Drawing.Color.Teal
+            };
 
-                if (edge == selectedEdge)
-                {
-                    edgeColor = Color.DeepPink; // Seçiliyse Koyu Pembe
-                    edgeWidth = 8;              // Ve daha kalın
-                }
-                else
-                {
-                    edgeColor = Color.Pink;     // Değilse normal pembe
-                    edgeWidth = 5;
-                }
-
-                // Belirlenen renk ve kalınlık ile kalemi oluştur
-                using (Pen pen = new Pen(edgeColor, edgeWidth))
-                {
-                    g.DrawLine(pen, edge.Source.Location, edge.Target.Location);
-                }
-
-                // Ağırlık yazısı (Değişmedi)
-                Point midPoint = new Point(
-                    (edge.Source.Location.X + edge.Target.Location.X) / 2,
-                    (edge.Source.Location.Y + edge.Target.Location.Y) / 2);
-
-                using (Font font = new Font("Arial", 12))
-                {
-                    g.DrawString(edge.Weight.ToString(), font, Brushes.Black, midPoint);
-                }
-            }
-
-                // --- 2. KATMAN: RENKLİ YOLLAR (Ortada) ---
-
-                // Sarı Yol (Shortest Path)
-                DrawPath(g, shortestPath, Color.Gold);
-
-            // DFS Yolu (Mor)
-            DrawPath(g, dfsPath, Color.Purple);
-
-            // Dijkstra Yolu (Yeşil)
-            DrawPath(g, djkPath, Color.LimeGreen);
-
-            // A* Yolu (Kırmızı)
-            DrawPath(g, AStarPath, Color.Red);
-
-            // --- 3. KATMAN: DÜĞÜMLER (En üstte) ---
-            foreach (var node in graph.Nodes)
+            int colorIndex = 0;
+            while (sortedNodes.Count > 0)
             {
-                Brush brush = (node == selectedNode) ? Brushes.Red : Brushes.Blue;
+                var currentColor = colors[colorIndex % colors.Count];
+                var coloredInThisRound = new List<Node>();
 
-                // Yuvarlağı çiz
-                g.FillEllipse(brush, node.Location.X - NodeRadius, node.Location.Y - NodeRadius, NodeRadius * 2, NodeRadius * 2);
+                var firstNode = sortedNodes[0];
+                firstNode.NodeColor = currentColor;
+                coloredInThisRound.Add(firstNode);
+                sortedNodes.RemoveAt(0);
 
-                // İsmi yaz
-                using (Font font = new Font("Arial", 12, FontStyle.Bold))
+                for (int i = 0; i < sortedNodes.Count; i++)
                 {
-                    g.DrawString(node.Name, font, Brushes.White, node.Location.X - NodeRadius / 2, node.Location.Y - NodeRadius / 2);
-                }
-            }
-        }
-
-        // Yolları çizen yardımcı metod
-        private void DrawPath(Graphics g, List<Node> path, Color color)
-        {
-            if (path != null && path.Count > 1)
-            {
-                using (Pen pathPen = new Pen(color, 5))
-                {
-                    for (int i = 0; i < path.Count - 1; i++)
+                    var node = sortedNodes[i];
+                    bool isNeighbor = false;
+                    foreach (var coloredNode in coloredInThisRound)
                     {
-                        g.DrawLine(pathPen, path[i].Location, path[i + 1].Location);
+                        if (node.Neighbors.Contains(coloredNode))
+                        {
+                            isNeighbor = true;
+                            break;
+                        }
+                    }
+
+                    if (!isNeighbor)
+                    {
+                        node.NodeColor = currentColor;
+                        coloredInThisRound.Add(node);
+                        sortedNodes.RemoveAt(i);
+                        i--;
                     }
                 }
+                colorIndex++;
             }
         }
     }
