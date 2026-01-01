@@ -1,68 +1,112 @@
-﻿using Microsoft.Win32; // WPF dosya pencereleri için bu gereklidir
-using Newtonsoft.Json;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
-using System.Windows; // MessageBox için bu gereklidir
-using SocialNetworkApp; // Arkadaşının Graph sınıfını görmek için
+using Newtonsoft.Json; // ARTIK BUNU KULLANIYORUZ
 
-namespace SociaGraph.UI
+namespace SocialNetworkApp
 {
-    public class FileManager
+    // Kaydetmek için ara sınıflar
+    public class GraphData
     {
-        // --- KAYDETME (SAVE) ---
-        public void SaveGraph(Graph graph)
+        public List<NodeData> Nodes { get; set; } = new List<NodeData>();
+        public List<EdgeData> Edges { get; set; } = new List<EdgeData>();
+    }
+
+    public class NodeData
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public double X { get; set; }
+        public double Y { get; set; }
+        public double ActivityScore { get; set; }
+        public int InteractionCount { get; set; }
+    }
+
+    public class EdgeData
+    {
+        public int SourceId { get; set; }
+        public int TargetId { get; set; }
+    }
+
+    public static class FileManager
+    {
+        // KAYDETME FONKSİYONU
+        public static void SaveGraph(Graph graph, string filePath)
         {
-            // WPF'de SaveFileDialog 
-            SaveFileDialog saveFileDialog = new SaveFileDialog();
-            saveFileDialog.Filter = "JSON Dosyası|*.json";
-            saveFileDialog.Title = "Grafiği Kaydet";
-            saveFileDialog.FileName = "GraphData.json";
+            var data = new GraphData();
 
-            // WPF'de ShowDialog() sonucu "true/false" döner 
-            if (saveFileDialog.ShowDialog() == true)
+            foreach (var node in graph.Nodes)
             {
-                var settings = new JsonSerializerSettings
+                data.Nodes.Add(new NodeData
                 {
-                    ReferenceLoopHandling = ReferenceLoopHandling.Serialize,
-                    PreserveReferencesHandling = PreserveReferencesHandling.Objects,
-                    Formatting = Formatting.Indented
-                };
-
-                string json = JsonConvert.SerializeObject(graph, settings);
-                File.WriteAllText(saveFileDialog.FileName, json);
-
-                // MessageBox kullanımı
-                MessageBox.Show("Kayıt Başarılı!", "Bilgi", MessageBoxButton.OK, MessageBoxImage.Information);
+                    Id = node.Id,
+                    Name = node.Name,
+                    X = node.Location.X,
+                    Y = node.Location.Y,
+                    ActivityScore = node.ActivityScore,
+                    InteractionCount = node.InteractionCount
+                });
             }
+
+            foreach (var edge in graph.Edges)
+            {
+                data.Edges.Add(new EdgeData
+                {
+                    SourceId = edge.Source.Id,
+                    TargetId = edge.Target.Id
+                });
+            }
+
+            // --- DEĞİŞEN KISIM (Newtonsoft) ---
+            // Formatting.Indented sayesinde JSON dosyası okunaklı kaydedilir.
+            string jsonString = JsonConvert.SerializeObject(data, Formatting.Indented);
+            File.WriteAllText(filePath, jsonString);
         }
 
-        // --- YÜKLEME (LOAD) ---
-        public Graph LoadGraph()
+        // YÜKLEME FONKSİYONU
+        public static Graph LoadGraph(string filePath)
         {
-            OpenFileDialog openFileDialog = new OpenFileDialog();
-            openFileDialog.Filter = "JSON Dosyası|*.json";
-            openFileDialog.Title = "Grafik Yükle";
+            if (!File.Exists(filePath)) return null;
 
-            if (openFileDialog.ShowDialog() == true)
+            string jsonString = File.ReadAllText(filePath);
+
+            // --- DEĞİŞEN KISIM (Newtonsoft) ---
+            var data = JsonConvert.DeserializeObject<GraphData>(jsonString);
+
+            if (data == null) return null;
+
+            Graph newGraph = new Graph();
+            var nodeDict = new Dictionary<int, Node>();
+
+            foreach (var nData in data.Nodes)
             {
-                string filePath = openFileDialog.FileName;
+                var location = new System.Drawing.Point((int)nData.X, (int)nData.Y);
+                Node newNode = new Node(nData.Id, nData.Name, location);
 
-                if (File.Exists(filePath))
+                newNode.ActivityScore = nData.ActivityScore;
+                newNode.InteractionCount = nData.InteractionCount;
+                newNode.NodeColor = System.Drawing.Color.Blue;
+
+                newGraph.Nodes.Add(newNode);
+                nodeDict[nData.Id] = newNode;
+            }
+
+            foreach (var eData in data.Edges)
+            {
+                if (nodeDict.ContainsKey(eData.SourceId) && nodeDict.ContainsKey(eData.TargetId))
                 {
-                    string json = File.ReadAllText(filePath);
+                    Node source = nodeDict[eData.SourceId];
+                    Node target = nodeDict[eData.TargetId];
 
-                    var settings = new JsonSerializerSettings
-                    {
-                        ReferenceLoopHandling = ReferenceLoopHandling.Serialize,
-                        PreserveReferencesHandling = PreserveReferencesHandling.Objects
-                    };
+                    Edge newEdge = new Edge(source, target);
+                    newGraph.Edges.Add(newEdge);
 
-                    Graph loadedGraph = JsonConvert.DeserializeObject<Graph>(json, settings);
-
-                    MessageBox.Show("Grafik Yüklendi!", "Bilgi", MessageBoxButton.OK, MessageBoxImage.Information);
-                    return loadedGraph;
+                    source.Neighbors.Add(target);
+                    target.Neighbors.Add(source);
                 }
             }
-            return null;
+
+            return newGraph;
         }
     }
 }

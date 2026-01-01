@@ -5,11 +5,12 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SociaGraph.UI"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="Sosyal Ağ Analizi - Proje 2" Height="600" Width="1000">
+
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="2*"/>
-            <ColumnDefinition Width="8*"/>
+            <ColumnDefinition Width="250"/>
+            <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
         <Grid.RowDefinitions>
@@ -28,22 +29,32 @@
                             <TextBlock Text="SEÇİLİ DÜĞÜM" FontWeight="Bold" Foreground="#007ACC" Margin="0,0,0,5"/>
 
                             <DockPanel Margin="0,2">
-                                <TextBlock Text="ID:" FontWeight="SemiBold" Width="60"/>
+                                <TextBlock Text="ID:" FontWeight="SemiBold" Width="70"/>
                                 <TextBlock x:Name="lblNodeId" Text="-"/>
                             </DockPanel>
 
                             <DockPanel Margin="0,2">
-                                <TextBlock Text="İsim:" FontWeight="SemiBold" Width="60"/>
+                                <TextBlock Text="İsim:" FontWeight="SemiBold" Width="70"/>
                                 <TextBlock x:Name="lblNodeName" Text="-"/>
                             </DockPanel>
 
                             <DockPanel Margin="0,2">
-                                <TextBlock Text="Puan:" FontWeight="SemiBold" Width="60"/>
+                                <TextBlock Text="Aktiflik:" FontWeight="SemiBold" Width="70"/>
+                                <TextBlock x:Name="lblNodeActivity" Text="-" Foreground="#D32F2F"/>
+                            </DockPanel>
+
+                            <DockPanel Margin="0,2">
+                                <TextBlock Text="Etkileşim:" FontWeight="SemiBold" Width="70"/>
+                                <TextBlock x:Name="lblNodeInteraction" Text="-" Foreground="#D32F2F"/>
+                            </DockPanel>
+
+                            <DockPanel Margin="0,2">
+                                <TextBlock Text="Puan:" FontWeight="SemiBold" Width="70"/>
                                 <TextBlock x:Name="lblNodeScore" Text="-"/>
                             </DockPanel>
 
                             <DockPanel Margin="0,2">
-                                <TextBlock Text="Bağlantı:" FontWeight="SemiBold" Width="60"/>
+                                <TextBlock Text="Bağlantı:" FontWeight="SemiBold" Width="70"/>
                                 <TextBlock x:Name="lblNodeDegree" Text="-"/>
                             </DockPanel>
 
@@ -65,6 +76,11 @@
                             <ListBox x:Name="lstAlgorithmResults" Height="200" BorderBrush="#EEE" Background="#FAFAFA"/>
                         </StackPanel>
                     </Border>
+
+                    <TextBlock Text="* Kısayollar:" FontSize="10" Foreground="Gray" Margin="0,10,0,0"/>
+                    <TextBlock Text="Shift+Tık: Dijkstra" FontSize="10" Foreground="Gray"/>
+                    <TextBlock Text="Ctrl+Tık: BFS" FontSize="10" Foreground="Gray"/>
+                    <TextBlock Text="Alt+Tık: A*" FontSize="10" Foreground="Gray"/>
 
                 </StackPanel>
             </ScrollViewer>
@@ -90,7 +106,8 @@
             <Button x:Name="btnLoad" Content="📂 Yükle" Width="80" Height="30" Margin="5" Click="btnLoad_Click"/>
             <Button x:Name="btnAnalyze" Content="🏆 Analiz (Top 5)" Width="100" Height="30" Margin="5" Click="btnAnalyze_Click"/>
             <Button x:Name="btnColoring" Content="🎨 Renklendir" Width="90" Height="30" Margin="5" Click="btnColoring_Click"/>
-           
+            <Button x:Name="btnRandom" Content="🎲 Rastgele (50)" Width="100" Height="30" Margin="5" Click="btnRandom_Click" Background="#E1BEE7"/>
+
         </StackPanel>
     </Grid>
 </Window>
