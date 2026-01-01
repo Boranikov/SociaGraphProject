@@ -77,7 +77,7 @@ namespace SociaGraph.UI
 
             sw.Stop();
 
-            lblPerformance.Text = $"{sw.ElapsedMilliseconds} ms";
+            lblPerformance.Text = $"{sw.Elapsed.TotalMilliseconds:0.0000} ms";
 
             lstAlgorithmResults.Items.Clear();
             lstAlgorithmResults.Items.Add("--- 🏆 EN ETKİLİ 5 KULLANICI ---");
@@ -238,7 +238,6 @@ namespace SociaGraph.UI
 
                 if (clickedNode != null)
                 {
-                    // CTRL + SHIFT veya diğer tuş kombinasyonları kontrolü
                     if (selectedNode != null && selectedNode != clickedNode &&
                         (System.Windows.Input.Keyboard.Modifiers == (System.Windows.Input.ModifierKeys.Control | System.Windows.Input.ModifierKeys.Shift) ||
                          System.Windows.Input.Keyboard.Modifiers == System.Windows.Input.ModifierKeys.Shift ||
@@ -277,30 +276,29 @@ namespace SociaGraph.UI
             System.Drawing.Color pathColor = System.Drawing.Color.Gray;
             string algoName = "";
 
+            System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
+            sw.Start();
+
             try
             {
-                // 1. ÖNCELİK: DFS (CTRL + SHIFT)
                 if (System.Windows.Input.Keyboard.Modifiers == (System.Windows.Input.ModifierKeys.Control | System.Windows.Input.ModifierKeys.Shift))
                 {
                     path = GraphAlgorithms.DFS_FindPath(selectedNode, targetNode);
                     pathColor = System.Drawing.Color.Magenta;
                     algoName = "DFS";
                 }
-                // 2. DIJKSTRA (SHIFT)
                 else if (System.Windows.Input.Keyboard.Modifiers == System.Windows.Input.ModifierKeys.Shift)
                 {
                     path = GraphAlgorithms.Dijkstra_ShortestPath(myGraph, selectedNode, targetNode);
                     pathColor = System.Drawing.Color.LimeGreen;
                     algoName = "Dijkstra";
                 }
-                // 3. BFS (CTRL)
                 else if (System.Windows.Input.Keyboard.Modifiers == System.Windows.Input.ModifierKeys.Control)
                 {
                     path = GraphAlgorithms.BFS_ShortestPath(myGraph, selectedNode, targetNode);
                     pathColor = System.Drawing.Color.OrangeRed;
                     algoName = "BFS";
                 }
-                // 4. A* (ALT)
                 else if (System.Windows.Input.Keyboard.Modifiers == System.Windows.Input.ModifierKeys.Alt)
                 {
                     path = GraphAlgorithms.AStar_Path(myGraph, selectedNode, targetNode);
@@ -308,11 +306,15 @@ namespace SociaGraph.UI
                     algoName = "A*";
                 }
 
+                sw.Stop();
+                lblPerformance.Text = $"{sw.Elapsed.TotalMilliseconds:0.0000} ms";
+
                 if (path != null && path.Count > 0)
                 {
                     VisualizePath(path, pathColor);
                     lstAlgorithmResults.Items.Clear();
                     lstAlgorithmResults.Items.Add($"--- {algoName} ---");
+                    lstAlgorithmResults.Items.Add($"Süre: {sw.Elapsed.TotalMilliseconds:0.0000} ms");
                     lstAlgorithmResults.Items.Add($"Adım: {path.Count - 1}");
                     foreach (var n in path) lstAlgorithmResults.Items.Add($"⬇ {n.Name}");
                 }
