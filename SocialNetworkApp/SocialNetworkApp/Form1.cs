@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Diagnostics;
 
 namespace SocialNetworkApp
 {
@@ -18,7 +19,7 @@ namespace SocialNetworkApp
         private Node selectedNode;
         private Edge selectedEdge;
         private const int NodeRadius = 20;
-        private int nextId = 5;
+        private int nextId = 1;
         private bool isDragging = false;
         private Point dragOffset;
         private List<Node> shortestPath = null;
@@ -32,31 +33,79 @@ namespace SocialNetworkApp
             InitializeComponent();
             this.KeyPreview = true;
             this.DoubleBuffered = true;
-            this.Size = new Size(800, 600);
+            this.Size = new Size(1920, 1000);
             this.Text = "Sosyal Ağ Grafiği";
-            createTestGraph();
+            createTestGraph(100, 0.1);
         }
 
-        private void createTestGraph()
+        // ------------------------TEST ETME -----------------------------------// 
+        private void createTestGraph(int nodeCount, double ConnectionProb)
         {
-            graph = new Graph();
-            // Test düğümleri oluşturma
-            Node nodeA = new Node(1, "Alice", new Point(100, 100));
-            Node nodeB = new Node(2, "Bob", new Point(300, 100));
-            Node nodeC = new Node(3, "Charlie", new Point(200, 300));
-            Node nodeD = new Node(4, "Diana", new Point(500, 200));
+            Random random = new Random();
+            graph = new Graph(); // Mevcut Grafiği sıfırla
+            List<string> names = new List<string> {"Boran", "Bülent", "Yağız", "Ahmet", "Eren", "Melih", "Ensar", "Berk", "Nuh", "Emir",
+            "Göksel", "Efe", "Mustafa", "Ömer", "Mert", "Ferda", "Ayhan", "Emirhan", "Can", "Onur",
+            "Zeynep", "Kerem", "Doğu", "Zöhre", "Yelda", "Emine", "Nazlı", "Ferdasu", "İbrahim",
+            "Deniz" }; // İsimler
+            int minDistance = 200; // Düğümler arası mesafe
 
-            graph.AddNode(nodeA);
-            graph.AddNode(nodeB);
-            graph.AddNode(nodeC);
-            graph.AddNode(nodeD);
+            // 1. Düğümleri oluştur
 
-            // Test kenarları oluşturma
-            graph.AddEdge(nodeA, nodeB);
-            graph.AddEdge(nodeA, nodeC);
-            graph.AddEdge(nodeB, nodeC);
-            graph.AddEdge(nodeB, nodeD);
+            for(int i =0; i < nodeCount; i++)
+            {
+                Point location;
+                bool PositionFound = false;
+                int attempts = 0;
+
+                // Çakışma Önleme döngüsü
+
+                do
+                {
+                    int x = random.Next(50, this.ClientSize.Width -50);
+                    int y = random.Next(50, this.ClientSize.Height -50);
+                    location = new Point(x, y);
+
+                    // Üst üste binme Kontrolü
+                    bool overlap = false;
+                    foreach(var node in graph.Nodes)
+                    {
+                        double dist = Math.Sqrt(Math.Pow(location.X - node.Location.X, 2) + Math.Pow(location.Y - node.Location.Y, 2));
+                        if (dist < minDistance)
+                        {
+                            overlap = true;
+                            break;
+                        }
+                    }
+                    if(!overlap) PositionFound = true;
+                    attempts++;
+                } while(!PositionFound && attempts < 100);
+
+                if (!PositionFound) continue; // Yer bulamazsan bu düğümü atla
+
+                string name = names.Count > i ? names[i] : $"User_{i + 1}";
+                graph.AddNode(new Node(i + 1, name, location));
+            }
+            // 2. Kenarları Oluştur
+            var nodeList = new List<Node>(graph.Nodes);
+            for (int i = 0; i < nodeList.Count; i++)
+            {
+                for (int j = i + 1; j < nodeList.Count; j++)
+                {
+                    if (random.NextDouble() < ConnectionProb)
+                    {
+                        graph.AddEdge(nodeList[i], nodeList[j]);
+                    }
+                }
+            }
+
+            // ID sayacını güncelle (Elle ekleme yaparsan çakışmasın diye)
+            nextId = nodeList.Count + 1;
+
+            // Ekranı yenile
+            this.Invalidate();
         }
+
+        // ------------------------------TEST ETME -----------------------------------//
 
             protected override void OnPaint(PaintEventArgs e)
             {
@@ -133,6 +182,8 @@ namespace SocialNetworkApp
         protected override void OnMouseDown(MouseEventArgs e)
         {
             base.OnMouseDown(e);
+            
+            Stopwatch stw = new Stopwatch();
 
             if (e.Button == MouseButtons.Left)
             {
@@ -141,43 +192,51 @@ namespace SocialNetworkApp
                 // 1. Durum: SHIFT Basılı (BFS - Sarı Yol)
                 if (Control.ModifierKeys == Keys.Shift && selectedNode != null && clickedNode != null)
                 {
+                    stw.Start();
                     shortestPath = GraphAlgorithms.BFS_ShortestPath(graph, selectedNode, clickedNode);
                     dfsPath = null;
                     djkPath = null;
                     AStarPath = null;
+                    stw.Stop();
+                    MessageBox.Show($"BFS Süre: {stw.Elapsed.TotalMilliseconds}");
 
                     if (shortestPath == null) MessageBox.Show("BFS ile bağlantı bulunamadı!");
                 }
                 // 2. Durum: ALT Basılı (DFS - Mor Yol)
                 else if (Control.ModifierKeys == Keys.Alt && selectedNode != null && clickedNode != null)
                 {
+                    stw.Restart();
                     dfsPath = GraphAlgorithms.DFS_FindPath(selectedNode, clickedNode);
-
                     shortestPath = null;
                     djkPath = null;
                     AStarPath = null;
-
+                    stw.Stop();
+                    MessageBox.Show($"DFS Süre: {stw.Elapsed.TotalMilliseconds}");
                     if (dfsPath == null) MessageBox.Show("DFS ile bağlantı bulunamadı!");
                 }
                 // 3. Durum : CTRL Basılı (Djikstra - Yeşil Yol)
                 else if (Control.ModifierKeys == Keys.Control && selectedNode != null && clickedNode != null)
                 {
+                    stw.Restart();
                     djkPath = GraphAlgorithms.Dijkstra_ShortestPath(graph, selectedNode, clickedNode);
 
                     shortestPath = null;
                     dfsPath = null;
                     AStarPath = null;
-
+                    stw.Stop();
+                    MessageBox.Show($"Djikstra Süre: {stw.Elapsed.TotalMilliseconds}");
                     if (djkPath == null) MessageBox.Show("DJK ile bağlantı bulunamadı!");
                 }
                 // 4. Durum : CTRL + SHİFT Basılı (A* - Kırmızı Yol)
                 else if ((Control.ModifierKeys & (Keys.Control | Keys.Shift)) == (Keys.Control | Keys.Shift) && selectedNode != null && clickedNode != null)
                 {
+                    stw.Restart();
                     AStarPath = GraphAlgorithms.AStar_Path(graph, selectedNode, clickedNode);
                     shortestPath = null;
                     dfsPath = null;
                     djkPath = null;
-
+                    stw.Stop();
+                    MessageBox.Show($"A* Süre: {stw.Elapsed.TotalMilliseconds}");
                     if (AStarPath == null) MessageBox.Show("AStar ile bağlantı bulunamadı");
                 }
                 // 5. Durum: Hiçbir Tuş Yok (Sürükleme veya Seçim)

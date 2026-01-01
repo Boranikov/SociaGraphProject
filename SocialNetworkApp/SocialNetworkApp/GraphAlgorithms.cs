@@ -4,18 +4,15 @@ using System.Linq;
 
 namespace SocialNetworkApp
 {
-    public static class GraphAlgorithms
+    internal class GraphAlgorithms
     {
-        // 1. DERECE MERKEZÝLÝÐÝ (En Etkili 5 Kiþi)
-        public static List<Node> GetTopInfluencers(Graph graph, int topN)
+        // ----------------------------- BFS --------------------------------------//
+        public static List<Node> BFS_ShortestPath(Graph graph, Node start, Node end)
         {
-            // Sýralama Kriteri: Önce Komþu Sayýsý, eþitse Etkileþim Sayýsý (InteractionCount)
-            return graph.Nodes
-                .OrderByDescending(n => n.Neighbors.Count)
-                .ThenByDescending(n => n.InteractionCount) // DÜZELTÝLEN KISIM
-                .Take(topN)
-                .ToList();
-        }
+            if (start == null || end == null) return null;
+            var previous = new Dictionary<Node, Node>(); //Hangi düðüme nerden geldik
+            var queue = new Queue<Node>(); //BFS için kuyruk
+            var visited = new HashSet<Node>(); //Ziyaret edilen düðümler
 
         // 2. WELSH-POWELL RENKLENDÝRME
         public static void WelshPowellColor(Graph graph)
