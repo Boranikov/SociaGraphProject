@@ -58,8 +58,70 @@ flowchart TD
     G --> C
     C -- "Evet" --> H["Yol Yok"]
 ```
+### 2.3. DFS (Depth-First Search – Derinlik Öncelikli Arama)
 
-### 2.3. Welsh-Powell Graf Renklendirme
+Literatür İncelemesi:
+DFS algoritması ilk olarak Trémaux (1882) tarafından labirent çözme problemleri için kullanılmış, daha sonra bilgisayar bilimlerinde grafik dolaşımı için temel algoritmalardan biri haline gelmiştir. Bağlantılılık analizi, çevrim (cycle) tespiti ve topolojik sıralama gibi problemlerde yaygın olarak kullanılır.
+
+Çalışma Mantığı:
+DFS, bir graf üzerinde mümkün olduğu kadar derine inmeyi hedefleyen bir arama stratejisi izler. Algoritma, başlangıç düğümünden hareketle bir komşuya gider, oradan başka bir komşuya geçer ve artık ilerleyemeyene kadar bu şekilde devam eder. Daha sonra geri dönerek (backtracking) ziyaret edilmemiş diğer düğümleri keşfeder. Bu işlem genellikle Yığın (Stack) yapısı veya özyineleme (recursion) ile gerçekleştirilir.
+
+DFS, yolun en kısa olup olmadığını garanti etmez ancak grafın yapısını analiz etmek için oldukça etkilidir.
+
+Karmaşıklık Analizi:
+Her düğüm ve kenar en fazla bir kez ziyaret edildiği için zaman karmaşıklığı O(V + E)’dir.
+
+**Akış Diyagramı:**
+```mermaid
+flowchart TD
+    A["Başla"] --> B["Başlangıç Düğümünü Ziyaret Et"]
+    B --> C{"Ziyaret Edilmemiş Komşu Var mı?"}
+    C -- "Evet" --> D["Komşuya Git (DFS)"]
+    D --> C
+    C -- "Hayır" --> E["Geri Dön (Backtrack)"]
+    E --> F{"Tüm Düğümler Ziyaret Edildi mi?"}
+    F -- "Hayır" --> C
+    F -- "Evet" --> G["Bitti"]
+```
+
+### 2.4. A* (A Star) En Kısa Yol Algoritması
+
+Literatür İncelemesi:
+A* algoritması, Hart, Nilsson ve Raphael (1968) tarafından geliştirilmiş olup, Dijkstra algoritmasının sezgisel (heuristic) bir uzantısıdır. Oyun geliştirme, yapay zekâ ve rota planlama sistemlerinde yaygın olarak kullanılmaktadır.
+
+Çalışma Mantığı:
+A* algoritması, her düğüm için iki değeri birleştirerek çalışır:
+
+g(n): Başlangıç düğümünden mevcut düğüme kadar olan gerçek maliyet
+
+h(n): Mevcut düğümden hedef düğüme olan tahmini maliyet (heuristic)
+
+Toplam maliyet şu şekilde hesaplanır:
+
+f(n) = g(n) + h(n)
+
+Algoritma, her adımda f(n) değeri en düşük olan düğümü seçer. Eğer kullanılan heuristic fonksiyon iyimser (admissible) ise, A* algoritması en kısa yolu bulmayı garanti eder. Bu projede heuristic olarak düğümler arasındaki Öklidyen mesafe kullanılmıştır.
+
+Karmaşıklık Analizi:
+Kullanılan heuristic fonksiyonun kalitesine bağlı olmakla birlikte, ortalama durumda O(E)’ye yakın performans gösterir. En kötü durumda Dijkstra’ya benzer şekilde O(E + V log V) karmaşıklığına sahiptir.
+
+**Akış Diyagramı:**
+```mermaid
+flowchart TD
+    A["Başla"] --> B["Başlangıç Düğümünü Açık Listeye Ekle"]
+    B --> C{"Açık Liste Boş mu?"}
+    C -- "Hayır" --> D["En Düşük f(n) Değerli Düğümü Seç"]
+    D --> E{"Hedefe Ulaşıldı mı?"}
+    E -- "Evet" --> F["Yolu Oluştur ve Bitir"]
+    E -- "Hayır" --> G["Komşuları Değerlendir"]
+    G --> H{"Daha Kısa Yol Bulundu mu?"}
+    H -- "Evet" --> I["g, h, f Değerlerini Güncelle"]
+    I --> C
+    H -- "Hayır" --> C
+    C -- "Evet" --> J["Yol Yok"]
+```
+
+### 2.5. Welsh-Powell Graf Renklendirme
 **Literatür İncelemesi:** Welsh ve Powell (1967), grafların kromatik sayısını bulmak için etkin bir üst sınır algoritması geliştirmiştir. Çizelgeleme ve frekans atama problemlerinde kullanılır.
 
 **Çalışma Mantığı:** Bu algoritma, 'En zor işi önce hallet' stratejisine dayanır. Bir grafi renklendirirken en çok problem çıkaracak düğümler, en çok bağlantısı olanlardır. Bu yüzden algoritma önce tüm düğümleri bağlantı sayılarına göre büyükten küçüğe sıralar. İlk rengi alır ve listenin en başındaki (en yoğun) düğüme verir. Daha sonra listede aşağıya doğru inerek, bu düğümle hiç bağlantısı olmayan diğer düğümlere de aynı rengi verir. Boyanacak yer kalmayınca ikinci renge geçer ve işlem tüm düğümler boyanana kadar sürer.
