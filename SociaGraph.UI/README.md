@@ -199,7 +199,7 @@ classDiagram
 ### 4.1. Ekran Görüntüleri
 | Ana Ekran ve Graf Yapısı | Algoritma ve Analiz Sonuçları |
 |---|---|
-| ![AnaEkran](https://via.placeholder.com/400x300?text=Lutfen+Resim+Linkini+Yapistir) | ![Analiz](https://via.placeholder.com/400x300?text=Lutfen+Resim+Linkini+Yapistir) |
+| ![AnaEkran](https://github.com/user-attachments/assets/18f5d132-c6c7-4c1b-bc8f-79468a1e4d95) | ![Analiz](https://github.com/user-attachments/assets/3729ddab-d330-444d-a3c4-451c8284f9e1) |
 
 ### 4.2. Test Senaryoları
 Uygulama aşağıdaki senaryolarla test edilmiş ve doğrulanmıştır:
